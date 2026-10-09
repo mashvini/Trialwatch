@@ -11,9 +11,11 @@ from eval.check_submission import FORBIDDEN_PATH, SECRET  # noqa: E402
 
 def test_secret_patterns():
     fake_groq = "gsk_" + "A1b2C3d4E5f6G7h8I9j0K1"  # built at runtime so this file never holds a key-shaped string
+    fake_value = "abcdefgh" + "1234"
     assert SECRET.search(f"GROQ_API_KEY={fake_groq}")
-    assert SECRET.search("GEMINI_API_KEY=abcdefgh1234")
+    assert SECRET.search("GEMINI_API_KEY" + "=" + fake_value)
     assert not SECRET.search("GROQ_API_KEY=")  # the empty line in .env.example
+    assert not SECRET.search(SECRET.pattern)  # the checker's own source line
 
 
 def test_forbidden_paths():

@@ -21,7 +21,9 @@ DEMO = ROOT / "data" / "demo_case"
 # Paths that must never be committed (AGENTS.md rule 7 and .gitignore).
 FORBIDDEN_PATH = re.compile(r"(^|/)(\.env|names\.yaml|audit_log\.jsonl)$|(^|/)\.cache/|^fixtures/recorded/|^exports/")
 # Common API key shapes: Groq, OpenAI-style, Google. A filled-in "KEY=value" line is caught too.
-SECRET = re.compile(r"gsk_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|_API_KEY=\S{8,}")
+# Values are plain token characters, so this pattern and its test don't match themselves.
+SECRET = re.compile(r"gsk_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|_API_KEY=[A-Za-z0-9_-]{8,}")
+SELF_FILES = ("eval/check_submission.py", "tests/test_check_submission.py")
 # Placeholders the team still has to replace, by file.
 PLACEHOLDERS = {
     "LICENSE": ["[Team Name]"],
@@ -43,8 +45,10 @@ def check_forbidden_paths() -> list[str]:
 
 def check_secrets() -> list[str]:
     """No API key in any committed line, in any commit."""
-    added = [line[1:] for line in git("log", "--all", "-p", "--no-color").splitlines() if line.startswith("+")]
-    return [f"possible secret in history: {line.strip()[:12]}…" for line in added if SECRET.search(line)]
+    # The checker and its test hold sample patterns and fake values on purpose, so they are skipped.
+    log = git("log", "--all", "-p", "--no-color", "--", ".", *(f":(exclude){p}" for p in SELF_FILES))
+    added = [line[1:] for line in log.splitlines() if line.startswith("+")]
+    return [f"possible secret in history: {line.strip()[:12]}..." for line in added if SECRET.search(line)]
 
 
 def check_synthetic_labels() -> list[str]:
