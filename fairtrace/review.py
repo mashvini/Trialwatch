@@ -22,9 +22,14 @@ def load_decisions(case_dir: Path) -> list[Decision]:
     return [Decision.model_validate_json(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def latest_decisions(decisions: list[Decision]) -> dict[str, Decision]:
+    """The latest decision per flag id (later lines overwrite earlier ones)."""
+    return {d.flag_id: d for d in decisions}
+
+
 def apply_decisions(flags: list[Flag], decisions: list[Decision]) -> None:
     """Set each flag's status from its latest decision (in place)."""
-    latest = {d.flag_id: d.decision for d in decisions}  # later lines overwrite earlier ones
+    latest = latest_decisions(decisions)
     for flag in flags:
         if flag.id in latest:
-            flag.status = latest[flag.id]
+            flag.status = latest[flag.id].decision

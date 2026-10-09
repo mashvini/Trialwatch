@@ -62,6 +62,7 @@ def run_pipeline() -> tuple[CaseRecord, list[tuple[str, str, str]]]:
     record = CaseRecord(case=case)
     llm = LLM(settings, mode)
     st.session_state["rejected"] = []
+    st.session_state["run_model"] = llm.model_name  # logged with decisions, even if the sidebar mode changes later
 
     def step(name: str, fn) -> bool:
         try:
@@ -125,13 +126,39 @@ def not_built(message: str) -> None:
     st.info(f"Not built yet: {message}", icon="🛠️")
 
 
-def render_flag(f: Flag, rec: CaseRecord) -> None:
+FLAG_STATUS = {
+    "pending": "⏳ pending",
+    "accepted": "✅ accepted",
+    "rejected": "🚫 rejected",
+    "needs_facts": "❓ needs facts",
+}
+REVIEW_ACTIONS = [("Accept", "accepted"), ("Reject", "rejected"), ("Needs facts", "needs_facts")]
+
+
+def decision_provenance(f: Flag, challenge) -> tuple[str, str]:
+    """(model, prompt versions) that produced what the reviewer saw on this card."""
+    versions = []
+    if f.origin == "notes":
+        versions.append(f"flag:{settings.prompt_versions.get('flag', '')}")
+    if challenge:
+        versions.append(f"devils_advocate:{settings.prompt_versions.get('devils_advocate', '')}")
+    model = st.session_state.get("run_model", "") if versions else "none (Copy-Through, no model)"
+    return model, ", ".join(versions)
+
+
+def render_flag(f: Flag, rec: CaseRecord, last: Decision | None) -> None:
     right = RIGHTS.get(f.right_id)
     lines = rec.lines_by_id()
     with st.container(border=True):
-        origin = " · from Copy-Through" if f.origin == "copy_through" else ""
-        st.markdown(f"**{right.name if right else f.right_id}** · `{f.id}` · status: **{f.status}**{origin}")
+        origin = " · from Copy-Through (no AI)" if f.origin == "copy_through" else ""
+        st.markdown(
+            f"**{right.name if right else f.right_id}** · `{f.id}` · {FLAG_STATUS.get(f.status, f.status)}{origin}"
+        )
+        if last:
+            note = f": “{last.note}”" if last.note else ""
+            st.caption(f"Last decision: {last.decision} by {last.reviewer}, {last.timestamp[:16].replace('T', ' ')} UTC{note}")
         st.write(f.explanation)
+        st.markdown(f"Quoted: “{f.quote}”")
         for sid in f.source_ids:
             text = lines[sid].text if sid in lines else "⚠️ unknown source"
             st.markdown(f"> `{sid}` {text}")
@@ -148,20 +175,24 @@ def render_flag(f: Flag, rec: CaseRecord) -> None:
             st.markdown(f"Record check: **{challenge.verdict.replace('_', ' ')}** {cites}")
             if challenge.reasoning:
                 st.caption(challenge.reasoning)
+        note = st.text_input("Note for the audit log (optional)", key=f"note-{f.id}")
         cols = st.columns(3)
-        for col, (label, status) in zip(cols, [("Accept", "accepted"), ("Reject", "rejected"), ("Needs facts", "needs_facts")]):
-            if col.button(label, key=f"{status}-{f.id}"):
-                if not reviewer.strip():
+        for col, (label, status) in zip(cols, REVIEW_ACTIONS):
+            # A reviewer name is required, and re-clicking the current status would only add noise to the log.
+            if col.button(label, key=f"{status}-{f.id}", disabled=not reviewer.strip() or f.status == status):
+                if not reviewer.strip():  # the disabled button is the UI; this keeps the rule in code too
                     st.error("Enter your name in the sidebar first.")
                     continue
+                model, prompt_version = decision_provenance(f, challenge)
                 review.record_decision(
                     case_dir,
                     Decision(
                         flag_id=f.id,
                         decision=status,
                         reviewer=reviewer.strip(),
-                        model=LLM(settings, mode).model_name,
-                        prompt_version=settings.prompt_versions.get("flag", ""),
+                        note=note.strip(),
+                        model=model,
+                        prompt_version=prompt_version,
                     ),
                 )
                 f.status = status
@@ -202,12 +233,22 @@ with tabs[2]:
     if record is None or not record.flags:
         not_built("potential issues appear here once T2–T4 are built, or when Copy-Through finds strong matches.")
     else:
+        counts = {s: sum(1 for f in record.flags if f.status == s) for s in FLAG_STATUS}
+        reviewed = len(record.flags) - counts["pending"]
+        st.progress(reviewed / len(record.flags), text=f"{reviewed} of {len(record.flags)} potential issues reviewed")
+        st.caption(" · ".join(f"{FLAG_STATUS[s]}: {n}" for s, n in counts.items()))
+        if not reviewer.strip():
+            st.warning("Enter your name in the sidebar to accept or reject potential issues.")
         shown = st.multiselect(
-            "Show", ["pending", "needs_facts", "accepted", "rejected"], default=["pending", "needs_facts", "accepted"]
+            "Show",
+            list(FLAG_STATUS),
+            default=["pending", "needs_facts", "accepted"],
+            format_func=lambda s: FLAG_STATUS[s],
         )
+        latest = review.latest_decisions(review.load_decisions(case_dir))
         for f in record.flags:
             if f.status in shown:
-                render_flag(f, record)
+                render_flag(f, record, latest.get(f.id))
     rejected = st.session_state.get("rejected", []) if record is not None else []
     if rejected:
         with st.expander(f"Rejected by the verifier ({len(rejected)})"):
