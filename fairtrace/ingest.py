@@ -4,6 +4,7 @@ Source IDs are the basis of every citation. They are created here and nowhere el
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import yaml
@@ -27,7 +28,12 @@ def number_hearing(hearing: HearingRef, text: str) -> list[SourceLine]:
     - doc = hearing.id
     - text = the line with trailing whitespace removed (otherwise unchanged).
     """
-    raise NotImplementedError("T1: number hearing lines (see the docstring in ingest.py)")
+    lines: list[SourceLine] = []
+    for n, raw in enumerate(text.splitlines(), start=1):
+        line = raw.rstrip()
+        if line and not line.startswith("#"):
+            lines.append(SourceLine(id=f"{hearing.id}-L{n:03d}", doc=hearing.id, text=line))
+    return lines
 
 
 def split_paragraphs(doc: DocumentRef, text: str) -> list[SourceLine]:
@@ -40,7 +46,12 @@ def split_paragraphs(doc: DocumentRef, text: str) -> list[SourceLine]:
     - Lines inside a paragraph are joined with single spaces; repeated whitespace collapses to one space.
     - doc = doc.id
     """
-    raise NotImplementedError("T1: split document paragraphs (see the docstring in ingest.py)")
+    body = "\n".join(line for line in text.splitlines() if not line.startswith("#"))
+    blocks = [" ".join(block.split()) for block in re.split(r"\n\s*\n", body)]
+    return [
+        SourceLine(id=f"{doc.id}-P{n:03d}", doc=doc.id, text=block)
+        for n, block in enumerate((b for b in blocks if b), start=1)
+    ]
 
 
 def read_sources(case_dir: Path, case: Case) -> list[SourceLine]:
