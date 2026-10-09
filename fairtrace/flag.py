@@ -1,6 +1,9 @@
 """Map events to potential fair-trial issues (model step 2 of 3)."""
 from __future__ import annotations
 
+import json
+
+from . import prompts, taxonomy
 from .config import Settings
 from .llm import LLM
 from .schemas import CaseRecord, Flag
@@ -24,4 +27,24 @@ def flag_issues(record: CaseRecord, llm: LLM, settings: Settings, rights: list[R
     Do NOT filter here: verify.verify_flags decides what passes, so rejections stay visible.
     Spec: tests/test_spec_extract_flag.py
     """
-    raise NotImplementedError("T3: flag potential issues (see the docstring in flag.py)")
+    system, user_template, _version = prompts.load_prompt(settings, "flag")
+    rights_text = taxonomy.rights_for_prompt(rights)
+    examples = taxonomy.load_worked_examples(settings)
+    flags: list[Flag] = []
+    for hearing in record.case.hearings:
+        events = [e.model_dump() for e in record.events if e.hearing == hearing.id]
+        user = prompts.render(
+            user_template,
+            hearing_id=hearing.id,
+            rights=rights_text,
+            examples=examples,
+            events=json.dumps(events, indent=1, ensure_ascii=False),
+            lines=prompts.format_lines(record.lines_for(hearing.id)),
+        )
+        raw = llm.complete_model("flag", system, user, Flag, key="flags", mock_key=hearing.id)
+        # ids, origin and status are set in code, never taken from the model.
+        flags += [
+            f.model_copy(update={"id": f"F-{hearing.id}-{n}", "origin": "notes", "status": "pending", "verifier_notes": []})
+            for n, f in enumerate(raw, start=1)
+        ]
+    return flags
