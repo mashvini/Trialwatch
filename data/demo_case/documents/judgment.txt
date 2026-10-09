@@ -1,0 +1,14 @@
+# SYNTHETIC SAMPLE: invented to test the Copy-Through Detector. Not a real document.
+# Paragraphs 3-4 are the court's own reasoning (set in case.yaml as reasoning_paragraphs).
+# Paragraph 1 quotes the indictment (normal; must NOT raise a flag).
+# Paragraph 3 repeats the police report's conclusion word for word (must raise a flag).
+
+The defendant is charged with spreading false information under the Cybercrime Act. The indictment states: "the defendant knowingly published false information with the intention of causing public panic and undermining trust in the authorities."
+
+The court heard the police investigator and admitted the written statement of a second witness.
+
+Having considered the evidence, the court finds that the defendant knowingly published false information with the intention of causing public panic and undermining trust in the authorities, and that the articles were shared more than four thousand times within two days.
+
+The defense's argument that the articles were checked by an editor does not change this conclusion.
+
+The defendant is sentenced to two years' imprisonment.

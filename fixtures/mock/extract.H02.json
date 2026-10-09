@@ -1,0 +1,9 @@
+{
+  "events": [
+    {"id": "E-H02-1", "hearing": "H02", "actor": "court_staff", "action": "Public and press were admitted, including four journalists.", "source_ids": ["H02-L005"]},
+    {"id": "E-H02-2", "hearing": "H02", "actor": "defendant", "action": "The defendant was present without restraints, next to defense counsel.", "source_ids": ["H02-L006"]},
+    {"id": "E-H02-3", "hearing": "H02", "actor": "judge", "action": "The judge confirmed the defense had the full evidence file two weeks earlier; defense counsel agreed.", "source_ids": ["H02-L007"]},
+    {"id": "E-H02-4", "hearing": "H02", "actor": "witness", "action": "A defense witness testified and was cross-examined and re-examined without interruption.", "source_ids": ["H02-L008", "H02-L009"]},
+    {"id": "E-H02-5", "hearing": "H02", "actor": "judge", "action": "The judge set the date for closing arguments and explained the schedule.", "source_ids": ["H02-L011"]}
+  ]
+}

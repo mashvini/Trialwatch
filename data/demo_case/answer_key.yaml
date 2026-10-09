@@ -1,0 +1,35 @@
+# Expected potential issues for the SYNTHETIC demo case.
+# For real test cases the law team writes this (see docs/09_teammate_inputs.md).
+# Matching rule: an item is caught if a flag has the same right_id and cites at least one of its source_ids.
+case_id: demo_synthetic
+expected:
+  - id: A1
+    right_id: examine_witnesses
+    source_ids: [H01-L012]
+    note: Defense stopped from cross-examining the police investigator.
+  - id: A2
+    right_id: examine_witnesses
+    source_ids: [H01-L014, H01-L015]
+    note: Written statement admitted although the witness did not appear; no reason given.
+  - id: A3
+    right_id: adequate_time_and_counsel
+    source_ids: [H01-L009, H01-L010]
+    note: 300 pages disclosed the evening before; request for time refused.
+  - id: A4
+    right_id: public_hearing
+    source_ids: [H01-L006]
+    note: Journalists turned away at the door with no reason given.
+  - id: A5
+    right_id: presumption_of_innocence
+    source_ids: [H01-L007]
+    note: Defendant handcuffed throughout with no recorded reason.
+  - id: A6
+    right_id: reasoned_judgment
+    source_ids: [JDG-P003, POL-P002]
+    note: The court's reasoning repeats the police report word for word (Copy-Through).
+  - id: A7
+    right_id: reasoned_judgment
+    source_ids: [JDG-P004]
+    note: Defense argument dismissed without reasons. Needs judgment analysis that the MVP doesn't do.
+    detectable_by_mvp: false
+clean_hearings: [H02]   # any flag citing these hearings counts as a false alarm

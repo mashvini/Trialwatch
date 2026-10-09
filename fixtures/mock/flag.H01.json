@@ -1,0 +1,64 @@
+{
+  "flags": [
+    {
+      "id": "F-H01-1",
+      "right_id": "examine_witnesses",
+      "event_ids": ["E-H01-5"],
+      "source_ids": ["H01-L012", "H01-L013"],
+      "quote": "Judge said the questions were \"not necessary\" and did not allow them.",
+      "explanation": "Potential issue with the right to examine witnesses. The defense was stopped from cross-examining the police investigator, and the notes record no reason beyond the judge calling the questions not necessary.",
+      "questions_for_lawyer": ["Was the restriction justified?", "Did it undermine equality of arms?", "Was this witness's evidence decisive for the verdict?"],
+      "missing_facts": ["What did the defense intend to ask the investigator?", "Did the judge give any fuller reason, in court or in writing?"]
+    },
+    {
+      "id": "F-H01-2",
+      "right_id": "examine_witnesses",
+      "event_ids": ["E-H01-6"],
+      "source_ids": ["H01-L014", "H01-L015"],
+      "quote": "Judge admitted it as evidence.",
+      "explanation": "Potential issue with the right to examine witnesses. A written statement was admitted although the witness did not appear and could not be questioned, and no reason for the absence was given.",
+      "questions_for_lawyer": ["Was there a good reason for the witness's absence?", "Was the statement decisive evidence?", "Were there safeguards to compensate the defense?"],
+      "missing_facts": ["Did the prosecution explain the absence outside the courtroom or in writing?"]
+    },
+    {
+      "id": "F-H01-3",
+      "right_id": "adequate_time_and_counsel",
+      "event_ids": ["E-H01-3", "E-H01-4"],
+      "source_ids": ["H01-L009", "H01-L010"],
+      "quote": "asked for two weeks to prepare",
+      "explanation": "Potential issue with adequate time to prepare a defense. About 300 pages of evidence reached the defense the evening before the hearing, and the request for more time was refused.",
+      "questions_for_lawyer": ["Was the time given adequate for the volume of evidence?", "Did the refusal affect what the defense could do at this hearing?"],
+      "missing_facts": ["When were the charges first notified to the defense?", "Was the evidence available earlier in any form?"]
+    },
+    {
+      "id": "F-H01-4",
+      "right_id": "public_hearing",
+      "event_ids": ["E-H01-1"],
+      "source_ids": ["H01-L006"],
+      "quote": "turned away three journalists",
+      "explanation": "Potential issue with the right to a public hearing. Three journalists were turned away at the door, and no reason was given in the courtroom.",
+      "questions_for_lawyer": ["Did the court order any restriction on attendance, with reasons?", "Was the restriction based on a ground the law allows?"],
+      "missing_facts": ["Was the courtroom full?", "Who instructed the police to refuse entry?"]
+    },
+    {
+      "id": "F-H01-5",
+      "right_id": "presumption_of_innocence",
+      "event_ids": ["E-H01-2"],
+      "source_ids": ["H01-L007"],
+      "quote": "Defendant brought in wearing handcuffs.",
+      "explanation": "Potential issue with the presumption of innocence. The defendant stayed handcuffed throughout the hearing, with no recorded security reason.",
+      "questions_for_lawyer": ["Was there an individual security assessment justifying restraints?", "Could the restraints have affected how the court viewed the defendant?"],
+      "missing_facts": ["Did the court or police give any reason for the handcuffs?"]
+    },
+    {
+      "id": "F-H01-6",
+      "right_id": "presumption_of_innocence",
+      "event_ids": [],
+      "source_ids": ["H01-L011"],
+      "quote": "the investigator called the defendant a criminal",
+      "explanation": "Potential issue with the presumption of innocence. The police investigator described the defendant as a criminal before the verdict.",
+      "questions_for_lawyer": ["Did the court react to the statement?"],
+      "missing_facts": []
+    }
+  ]
+}

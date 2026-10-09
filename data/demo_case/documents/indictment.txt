@@ -1,0 +1,5 @@
+# SYNTHETIC SAMPLE: invented to test the Copy-Through Detector. Not a real document.
+
+The prosecution charges the defendant with spreading false information under the Cybercrime Act.
+
+The prosecution alleges that the defendant knowingly published false information with the intention of causing public panic and undermining trust in the authorities.

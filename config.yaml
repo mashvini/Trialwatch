@@ -1,0 +1,46 @@
+# FairTrace settings. Secrets go in .env, never here.
+
+mode: mock            # mock | api | local  (FAIRTRACE_MODE in .env or the sidebar can override)
+
+providers:
+  api:                # any OpenAI-compatible endpoint; default is Groq
+    base_url: https://api.groq.com/openai/v1
+    api_key_env: GROQ_API_KEY
+    model: "<set a model id from the Groq console>"
+    json_mode: true
+  local:              # Ollama on this machine
+    base_url: http://localhost:11434/v1
+    api_key_env: ""   # Ollama ignores the key; a placeholder is sent
+    model: "<set an Ollama tag, e.g. from ollama.com/library>"
+    json_mode: false
+
+generation:
+  temperature: 0
+  max_retries: 1      # retry once on invalid JSON, then fail visibly
+  timeout_s: 60
+
+prompt_versions:      # logged with every review decision
+  extract: v1
+  flag: v1
+  devils_advocate: v1
+
+analyzers:            # switchable modules ticked by default in the sidebar
+  enabled: [copy_through, devils_advocate]
+
+copy_through:
+  min_shared_words: 8           # shortest copied run that counts as a match
+  candidates_per_paragraph: 3   # rapidfuzz pre-selection per judgment paragraph
+  flag_min_shared_words: 25     # a run this long inside the reasoning section raises a flag
+  right_id: reasoned_judgment   # law team decides the mapping (see taxonomy/rights.yaml)
+
+verify:
+  quote_match_threshold: 90     # rapidfuzz partial_ratio, 0-100
+  banned_words: [violation, violations, violated, violates, guilty]
+
+paths:
+  data_dir: data
+  fixtures_dir: fixtures/mock
+  record_dir: fixtures/recorded
+  prompts_dir: prompts
+  rights_file: taxonomy/rights.yaml
+  examples_file: taxonomy/worked_examples.yaml

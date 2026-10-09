@@ -1,0 +1,6 @@
+# Redaction map example (T11). Copy to names.yaml in the case folder; names.yaml is git-ignored.
+# Real name -> role. Matching is whole-word and case-insensitive; longer names are replaced first.
+# These names are invented.
+"Maria Santos": DEFENDANT
+"Ramon Cruz": WITNESS-1 (police investigator)
+"Elena Reyes": JUDGE

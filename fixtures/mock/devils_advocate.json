@@ -1,0 +1,46 @@
+{
+  "challenges": [
+    {
+      "flag_id": "F-H01-1",
+      "state_argument": "The judge may have limited questions that were repetitive or irrelevant, which courts may do to keep proceedings efficient.",
+      "verdict": "not_addressed",
+      "source_ids": [],
+      "reasoning": "The notes record only that the judge called the questions not necessary; they do not show what the questions were. Ask the monitor."
+    },
+    {
+      "flag_id": "F-H01-2",
+      "state_argument": "The second witness may have been unable to attend, and the statement may have been only supporting evidence.",
+      "verdict": "not_addressed",
+      "source_ids": [],
+      "reasoning": "No reason for the absence appears in the record, and the record does not show how the court used the statement."
+    },
+    {
+      "flag_id": "F-H01-3",
+      "state_argument": "The case had already been delayed, and the defense had enough time to prepare.",
+      "verdict": "rebutted",
+      "source_ids": ["H01-L009"],
+      "reasoning": "The defense received about 300 pages the evening before the hearing."
+    },
+    {
+      "flag_id": "F-H01-4",
+      "state_argument": "Entry was limited because the courtroom was full.",
+      "verdict": "rebutted",
+      "source_ids": ["H01-L099"],
+      "reasoning": "The courtroom had free seats."
+    },
+    {
+      "flag_id": "F-H01-5",
+      "state_argument": "Restraints were needed for security reasons.",
+      "verdict": "not_addressed",
+      "source_ids": ["H02-L006"],
+      "reasoning": "No security reason was recorded at H01. At the next hearing the defendant appeared without restraints, which the lawyer may want to weigh."
+    },
+    {
+      "flag_id": "F-CT-1",
+      "state_argument": "The court was only summarizing the prosecution's case before giving its own analysis.",
+      "verdict": "rebutted",
+      "source_ids": ["JDG-P003"],
+      "reasoning": "The passage is in paragraph 3, inside the court's own reasoning, and states the court's finding ('the court finds')."
+    }
+  ]
+}

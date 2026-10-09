@@ -1,0 +1,19 @@
+# secrets
+.env
+.streamlit/secrets.toml
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# runtime data (may contain sensitive material)
+data/*/.cache/
+data/*/audit_log.jsonl
+data/*/names.yaml
+fixtures/recorded/
+exports/
+
+# os
+.DS_Store

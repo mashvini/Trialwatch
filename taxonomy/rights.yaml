@@ -1,0 +1,123 @@
+# Fair-trial rights the tool checks against.
+#
+# DRAFT, written by the coding lead from public sources. LAW TEAM: review every entry before Friday
+# and change status to "reviewed". The code reads everything from this file; nothing legal is
+# hard-coded in Python.
+#
+# Fields: id (never rename once tests or answer keys use it), name, basis, observable_in_court,
+# status, red_flags (what a monitor might write down), key_questions (shown on every flag),
+# regional_references, notes.
+
+# ---------------------------------------------------------------- observable in court
+- id: public_hearing
+  name: Right to a public hearing
+  basis: ICCPR Art. 14(1); UN Human Rights Committee General Comment No. 32
+  observable_in_court: true
+  status: draft
+  red_flags:
+    - Public, press or trial monitors refused entry without a reason given by the court
+    - Hearing moved to a closed session without a reasoned court decision
+    - Judgment not made public
+  key_questions:
+    - Did the court itself order the restriction, and did it give reasons?
+    - Was the reason one the law allows (for example national security, public order, privacy of the parties, or the interests of justice)?
+    - Was the restriction limited to what was strictly necessary?
+
+- id: presumption_of_innocence
+  name: Presumption of innocence
+  basis: ICCPR Art. 14(2); General Comment No. 32
+  observable_in_court: true
+  status: draft
+  red_flags:
+    - Defendant kept in handcuffs, a cage or prison clothing without an individual security reason
+    - Officials, prosecutors or the judge describing the defendant as guilty before the verdict
+    - Court requiring the defendant to prove innocence (burden of proof shifted)
+  key_questions:
+    - Was there an individual security assessment for any restraints?
+    - Who made any prejudicial statement, when and where?
+    - Did the court place the burden of proof on the defendant?
+
+- id: adequate_time_and_counsel
+  name: Adequate time and facilities to prepare a defense, and access to a lawyer
+  basis: ICCPR Art. 14(3)(b) and (d); General Comment No. 32
+  observable_in_court: true
+  status: draft
+  red_flags:
+    - Evidence disclosed too late to review before the hearing
+    - Request for time to prepare refused
+    - Defendant unable to consult a lawyer confidentially, or without a lawyer
+    - Defense denied access to the case file or evidence
+  key_questions:
+    - How much time did the defense have, compared with the volume of evidence?
+    - Was access to the file or confidential consultation requested and refused?
+    - Did the restriction affect what the defense could do at the hearing?
+
+- id: trial_without_undue_delay
+  name: Trial without undue delay
+  basis: ICCPR Art. 14(3)(c); for detained defendants also Art. 9(3)
+  observable_in_court: true
+  status: draft
+  red_flags:
+    - Repeated adjournments, especially caused by the prosecution or the court
+    - Long gaps between hearings
+    - Defendant held in pretrial detention while the case stalls
+  key_questions:
+    - Who caused each adjournment, and why?
+    - How long has the case lasted since the charge, and is the defendant detained?
+    - Is the case complex enough to explain the delay?
+
+- id: examine_witnesses
+  name: Right to examine witnesses
+  basis: ICCPR Art. 14(3)(e); General Comment No. 32
+  observable_in_court: true
+  status: draft
+  red_flags:
+    - Defense stopped from questioning a prosecution witness
+    - Written statement admitted without the witness appearing
+    - Defense witnesses refused without reasons
+  key_questions:
+    - Was a reason given for the restriction, and was it justified?
+    - Was the witness's evidence decisive for the verdict?
+    - Were there safeguards to compensate the defense?
+  regional_references:
+    - "European Court of Human Rights, Al-Khawaja and Tahery v. United Kingdom (2011) and Schatschaschwili v. Germany (2015): good reason for the absence; sole or decisive evidence; counterbalancing factors"
+
+- id: interpreter
+  name: Free assistance of an interpreter
+  basis: ICCPR Art. 14(3)(f); General Comment No. 32
+  observable_in_court: true
+  status: draft
+  red_flags:
+    - Defendant does not understand the language of the court and no interpreter is provided
+    - Interpretation partial, summarized or of poor quality
+  key_questions:
+    - Does the defendant understand the language used in court?
+    - Was interpretation complete and free of charge?
+
+# ---------------------------------------------------------------- need the judgment text
+# Used by Copy-Through flags (config.yaml -> copy_through.right_id) and future judgment analysis.
+- id: reasoned_judgment
+  name: Right to a reasoned judgment
+  basis: ICCPR Art. 14(1) and 14(5); General Comment No. 32 (law team to confirm)
+  observable_in_court: false
+  status: draft
+  red_flags:
+    - Judgment does not explain how the evidence proves each element of the offence (for example intent)
+    - Defense arguments or evidence not addressed
+    - Court's reasoning repeats the police report or indictment without independent assessment
+  key_questions:
+    - Does the judgment explain how the evidence proves each element?
+    - Does it engage with the defense's main arguments and evidence?
+    - Did the court assess the evidence independently?
+
+- id: independent_tribunal
+  name: Independent and impartial tribunal
+  basis: ICCPR Art. 14(1); General Comment No. 32
+  observable_in_court: false
+  status: draft
+  red_flags:
+    - Court accepts police or prosecution conclusions without assessing them
+    - Judge's conduct or statements suggest prejudgment
+  key_questions:
+    - Is there evidence the court assessed the prosecution's case independently?
+    - Did the judge's conduct give an appearance of bias?

@@ -1,0 +1,11 @@
+# SYNTHETIC SAMPLE: invented to test the pipeline. Not a real case.
+# Hearing H02 | 2026-03-16 | Monitor M1 | Proceedings in English
+# Purpose: a hearing with no apparent problems, to check for false alarms.
+
+09:02 Hearing opened in Courtroom 4. Public and press admitted; about 25 people present, including four journalists.
+09:05 Defendant present without restraints, seated next to defense counsel.
+09:10 Judge confirmed the defense had received the full evidence file two weeks earlier. Defense counsel agreed.
+09:15 Defense witness 1 (newspaper editor) described the editorial checks on the two articles.
+09:40 Prosecutor cross-examined defense witness 1. Defense counsel re-examined. Judge did not interrupt.
+10:10 No interpreter was needed; everyone in court spoke English.
+10:15 Judge set closing arguments for 2026-03-30 and explained the schedule to both parties.

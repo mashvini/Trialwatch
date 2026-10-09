@@ -1,0 +1,16 @@
+# SYNTHETIC demo case: invented to test the pipeline. Not a real case.
+id: demo_synthetic
+title: "Demo case (synthetic): journalist charged over two online articles"
+country: Fictional
+language: en
+synthetic: true
+charges:
+  - "Spreading false information under a (fictional) Cybercrime Act"
+hearings:
+  - {id: H01, date: "2026-03-02", file: hearings/hearing_01.txt}
+  - {id: H02, date: "2026-03-16", file: hearings/hearing_02.txt}
+documents:
+  - {id: POL, type: police_report, file: documents/police_report.txt}
+  - {id: IND, type: indictment, file: documents/indictment.txt}
+  # reasoning_paragraphs: first and last paragraph of the court's OWN reasoning (inclusive)
+  - {id: JDG, type: judgment, file: documents/judgment.txt, reasoning_paragraphs: [3, 4]}

@@ -1,0 +1,7 @@
+# SYNTHETIC SAMPLE: invented to test the Copy-Through Detector. Not a real document.
+
+Police Report No. 17/2026. On 12 January 2026 the cybercrime unit received a complaint about two articles published online by the suspect.
+
+The investigation found that the suspect knowingly published false information with the intention of causing public panic and undermining trust in the authorities, and that the articles were shared more than four thousand times within two days.
+
+The unit recommends prosecution under the Cybercrime Act.

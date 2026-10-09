@@ -1,0 +1,16 @@
+# SYNTHETIC SAMPLE: invented to test the pipeline. Not a real case.
+# Replace with the team's test notes (see docs/09_teammate_inputs.md).
+# Hearing H01 | 2026-03-02 | Monitor M1 | Proceedings in English
+
+09:05 Hearing opened in Courtroom 4. About 15 members of the public present.
+09:07 Two police officers at the door checked IDs and turned away three journalists. No reason was given in the courtroom.
+09:10 Defendant brought in wearing handcuffs. The handcuffs stayed on for the whole hearing; no reason was recorded.
+09:15 Prosecutor read the charge: spreading false information under the Cybercrime Act, based on two online articles.
+09:22 Defense counsel said she received the prosecution's evidence file (about 300 pages) yesterday evening and asked for two weeks to prepare.
+09:25 Judge refused the adjournment, saying the case had "already been delayed enough".
+09:40 Prosecution witness 1 (police investigator) testified that the articles caused "public panic".
+09:58 Defense counsel stood to cross-examine witness 1. Judge said the questions were "not necessary" and did not allow them.
+10:00 Defense counsel objected. Judge noted the objection and moved on.
+10:05 Prosecutor submitted a written statement from a second witness, who did not appear. Judge admitted it as evidence.
+10:07 Defense counsel asked why the second witness was absent. No answer was given in court.
+10:30 Hearing adjourned to 2026-03-16.

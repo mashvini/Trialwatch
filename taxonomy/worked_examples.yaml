@@ -1,0 +1,28 @@
+# Worked examples inserted into the flag prompt to show the expected style.
+# DRAFT: law team, replace these with two examples you are happy to defend.
+# Each example: the observation (with its line ID), the potential issue, questions for the lawyer,
+# and the missing facts the monitor should be asked about.
+
+- observation: 'H09-L021 | The judge refused to allow the defense to question a prosecution witness.'
+  potential_issue:
+    right_id: examine_witnesses
+    explanation: Potential issue with the right to examine witnesses. The defense was stopped from questioning a prosecution witness, and the notes record no reason.
+  questions_for_lawyer:
+    - Was the restriction justified?
+    - Did it undermine equality of arms?
+    - Was this witness's evidence decisive for the verdict?
+  missing_facts:
+    - Did the judge give any reason for refusing the questions?
+    - What did the defense intend to ask?
+
+- observation: 'H09-L030 | Hearing adjourned for the 7th time because the prosecution witness did not appear. The defendant remains in detention.'
+  potential_issue:
+    right_id: trial_without_undue_delay
+    explanation: Potential issue with trial without undue delay. The hearing was adjourned again because of the prosecution while the defendant remains detained.
+  questions_for_lawyer:
+    - Who caused each adjournment, and why?
+    - How long has the defendant been detained?
+    - Is the case complex enough to explain the delay?
+  missing_facts:
+    - Dates and reasons of the earlier adjournments
+    - Date of arrest
