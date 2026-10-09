@@ -51,7 +51,7 @@ streamlit run app.py
 | `fairtrace/cache.py` | Caches module results so toggling never repeats model calls | ✅ |
 | `fairtrace/export.py` | Draft findings in Markdown (T9); questions for the monitor and their checklist (T8) | ✅ T9 |
 | `fairtrace/evaluate.py` | Answer-key loading and scoring | ✅ T10 |
-| `fairtrace/redact.py` | `load_names` ✅ · redact/restore 🛠️ | T11 |
+| `fairtrace/redact.py` | `load_names`, `redact`, `restore`, `redact_lines` (applied right after ingest) | ✅ T11 |
 | `prompts/` | `extract_v1.md`, `flag_v1.md`, `devils_advocate_v1.md` (drafts) | Law team reviews |
 | `taxonomy/` | `rights.yaml` (8 rights, draft), `worked_examples.yaml` (draft) | Law team reviews |
 | `data/demo_case/` | Synthetic case: 2 hearings, 3 documents, answer key | ✅ |

@@ -6,9 +6,12 @@ Limitation: it only catches names you list.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import yaml
+
+from .schemas import SourceLine
 
 
 def load_names(case_dir: Path) -> dict[str, str]:
@@ -26,9 +29,26 @@ def redact(text: str, mapping: dict[str, str]) -> str:
     - Whole words only ("Maria" must not change "Mariana"), case-insensitive.
     - Longest names first, so "Maria Santos" is replaced before "Maria".
     """
-    raise NotImplementedError("T11: redact names (see the docstring in redact.py)")
+    if not mapping:
+        return text
+    roles = {name.lower(): role for name, role in mapping.items()}
+    names = sorted(mapping, key=len, reverse=True)
+    # One pass over the text, so a replacement like "[DEFENDANT]" is never matched again.
+    pattern = re.compile(r"(?<!\w)(" + "|".join(re.escape(n) for n in names) + r")(?!\w)", re.IGNORECASE)
+    return pattern.sub(lambda m: f"[{roles[m.group(1).lower()]}]", text)
 
 
 def restore(text: str, mapping: dict[str, str]) -> str:
     """T11. Reverse of redact(): "[ROLE]" -> the original name (use only at export, if the lawyer chooses)."""
-    raise NotImplementedError("T11: restore names (see the docstring in redact.py)")
+    for name, role in mapping.items():
+        text = text.replace(f"[{role}]", name)
+    return text
+
+
+def redact_lines(lines: list[SourceLine], mapping: dict[str, str]) -> list[SourceLine]:
+    """Redact numbered lines right after ingest, keeping their IDs.
+
+    Doing it here, not per prompt, means the model, the verifier, Copy-Through and the app all see
+    the same text, so a quote of "[DEFENDANT]" still matches its cited line.
+    """
+    return [line.model_copy(update={"text": redact(line.text, mapping)}) for line in lines]

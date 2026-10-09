@@ -48,7 +48,7 @@ Monitor notes / court documents
 | Questions for the monitor | `app.py` tab, `fairtrace/export.py` → `monitor_questions` | No | ✅ built | T8 |
 | Export | `fairtrace/export.py` | No | ✅ built | T9 |
 | Evaluation | `fairtrace/evaluate.py`, `eval/run_eval.py` | No | ✅ built | T10 |
-| Redaction | `fairtrace/redact.py` | No | 🛠️ stub | T11 |
+| Redaction | `fairtrace/redact.py` | No | ✅ built | T11 |
 | LLM adapter (mock / api / local) | `fairtrace/llm.py` | — | ✅ works | — |
 | Module registry and cache | `fairtrace/analyzers/`, `fairtrace/cache.py` | — | ✅ works | — |
 
@@ -165,6 +165,8 @@ Word export via `python-docx` is a stretch goal.
 
 ## Redaction (`fairtrace/redact.py`)
 `data/<case>/names.yaml` maps real names to roles (`"Maria Santos": DEFENDANT`). Text is redacted before any model call; names are restored only in the export, and only if the lawyer chooses. Matching is whole-word, case-insensitive, longest name first. **Limitation:** it only catches names you list.
+
+**Where it happens:** the numbered lines are redacted once, right after ingest (`redact.redact_lines`, called in `app.py` and `eval/run_eval.py`), not per prompt. Line IDs don't change. The model, the verifier, Copy-Through and the app all see the same redacted text, so a quote of "[DEFENDANT]" still matches its cited line. The sidebar says whether redaction is on. The Export tab has a "Restore real names in the export" checkbox (shown only when `names.yaml` exists); the monitor checklist stays redacted.
 
 ## Model modes (`fairtrace/llm.py`)
 | Mode | What it does | When |

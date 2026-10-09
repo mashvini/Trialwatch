@@ -11,7 +11,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from fairtrace import evaluate, export, extract, flag, ingest, review, verify
+from fairtrace import evaluate, export, extract, flag, ingest, redact, review, verify
 from fairtrace.analyzers import REGISTRY, in_stage_order
 from fairtrace.cache import get_or_run
 from fairtrace.config import VALID_MODES, load_settings
@@ -49,6 +49,11 @@ enabled = [
     for aid, a in REGISTRY.items()
     if st.sidebar.checkbox(a.label, value=aid in settings.analyzers_enabled, help=a.description, key=f"module-{aid}")
 ]
+names = redact.load_names(case_dir)
+if names:
+    st.sidebar.caption(f"🔒 Redaction on: {len(names)} names from names.yaml are replaced by roles before any model call.")
+else:
+    st.sidebar.caption("Redaction off: no names.yaml in this case folder.")
 reviewer = st.sidebar.text_input("Reviewer name", help="Recorded with every accept / reject decision.")
 run_clicked = st.sidebar.button("Run analysis", type="primary", key="run")
 
@@ -81,7 +86,8 @@ def run_pipeline() -> tuple[CaseRecord, list[tuple[str, str, str]]]:
         st.session_state["rejected"] = rejected
 
     core = [
-        ("T1 Ingest", lambda: record.source_lines.extend(ingest.read_sources(case_dir, case))),
+        # Redacted once here, so the model, the verifier and Copy-Through all see the same text.
+        ("T1 Ingest", lambda: record.source_lines.extend(redact.redact_lines(ingest.read_sources(case_dir, case), names))),
         ("T2 Extract events", lambda: record.events.extend(extract.extract_events(record, llm, settings))),
         ("T3 Flag potential issues", lambda: record.flags.extend(flag.flag_issues(record, llm, settings, rights))),
         ("T4 Verify", do_verify),
@@ -307,8 +313,12 @@ with tabs[5]:
     if record is None:
         st.info("Run the analysis first.")
     else:
+        restore = names and st.checkbox(
+            "Restore real names in the export",
+            help="Names stay redacted in the app and in every model call. Tick only if this draft may contain them.",
+        )
         try:
-            md = export.export_markdown(record, rights, reviewer.strip())
+            md = export.export_markdown(record, rights, reviewer.strip(), restore_names=names if restore else None)
         except NotImplementedError as e:
             not_built(str(e))
         else:

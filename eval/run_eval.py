@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from fairtrace import evaluate, extract, flag, ingest, verify
+from fairtrace import evaluate, extract, flag, ingest, redact, verify
 from fairtrace.analyzers import REGISTRY
 from fairtrace.config import load_settings
 from fairtrace.llm import LLM
@@ -26,7 +26,7 @@ def main(case_dir: Path, mode: str | None = None) -> int:
     case = ingest.load_case(case_dir)
     record = CaseRecord(case=case)
     try:
-        record.source_lines = ingest.read_sources(case_dir, case)
+        record.source_lines = redact.redact_lines(ingest.read_sources(case_dir, case), redact.load_names(case_dir))
         record.events = extract.extract_events(record, llm, settings)
         record.flags = flag.flag_issues(record, llm, settings, rights)
         record.flags, rejected = verify.verify_flags(record.flags, record, settings, rights)

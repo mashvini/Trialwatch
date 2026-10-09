@@ -19,7 +19,7 @@ def extract_events(record: CaseRecord, llm: LLM, settings: Settings) -> list[Eve
     2. system, user_template, version = prompts.load_prompt(settings, "extract").
     3. user = prompts.render(user_template, hearing_id=hearing.id, lines=prompts.format_lines(lines)).
     4. events = llm.complete_model("extract", system, user, Event, key="events", mock_key=hearing.id).
-       (Optional, T11: redact names in `user` before the call.)
+       (Names are already redacted: the app redacts record.source_lines right after ingest, T11.)
     5. Keep only source_ids of this hearing's lines (a subset of record.line_ids()); drop events left with none.
     6. Make ids unique: "E-H01-1", "E-H01-2", ...
 

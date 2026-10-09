@@ -4,7 +4,7 @@
 
 Built for TrialWatch (Human Rights Institute, Columbia Law School) at the FairTrial & AI Hackathon, October 2026. Track 2: Observation to Legal Evaluation.
 
-> **Status: working prototype.** The full pipeline runs end to end in mock mode on the synthetic demo case: numbering, extraction, flagging, verification, Copy-Through, Devil's Advocate, lawyer review, questions for the monitor, export and evaluation. Still to do: redaction (T11), a hearings × rights heatmap (T12) and testing with a real model; see [AGENTS.md](AGENTS.md) and [docs/04_build_plan.md](docs/04_build_plan.md).
+> **Status: working prototype.** The full pipeline runs end to end in mock mode on the synthetic demo case: numbering, extraction, flagging, verification, Copy-Through, Devil's Advocate, lawyer review, questions for the monitor, export and evaluation. Optional name redaction is built (T11). Still to do: a hearings × rights heatmap (T12) and testing with a real model; see [AGENTS.md](AGENTS.md) and [docs/04_build_plan.md](docs/04_build_plan.md).
 >
 > **The tool supports legal analysis. It does not replace the lawyer's judgment.**
 

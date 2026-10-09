@@ -5,11 +5,14 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from . import redact
 from .schemas import CaseRecord, Flag
 from .taxonomy import Right
 
 
-def export_markdown(record: CaseRecord, rights: list[Right], reviewer: str = "") -> str:
+def export_markdown(
+    record: CaseRecord, rights: list[Right], reviewer: str = "", restore_names: dict[str, str] | None = None
+) -> str:
     """T9. Build the draft findings document.
 
     Spec (tests/test_spec_export.py):
@@ -23,6 +26,7 @@ def export_markdown(record: CaseRecord, rights: list[Right], reviewer: str = "")
     - Footnotes at the end: "[^n]: <source id>: <line text>" for every cited line.
     - A final "## Open questions for the monitor" section listing missing_facts of accepted and
       needs_facts flags, grouped by hearing.
+    - restore_names (T11): if the lawyer chooses, the names.yaml map; "[ROLE]" becomes the real name.
     """
     case = record.case
     lines = record.lines_by_id()
@@ -64,7 +68,8 @@ def export_markdown(record: CaseRecord, rights: list[Right], reviewer: str = "")
     for sid, n in footnotes.items():
         text = lines[sid].text if sid in lines else "(source line not found)"
         out.append(f"[^{n}]: {sid}: {text}")
-    return "\n".join(out).rstrip() + "\n"
+    md = "\n".join(out).rstrip() + "\n"
+    return redact.restore(md, restore_names) if restore_names else md
 
 
 class MonitorQuestion(BaseModel):
