@@ -13,6 +13,7 @@ Everything the team has decided and planned for the FairTrial & AI Hackathon (Tr
 | [07_responsible_ai.md](07_responsible_ai.md) | Harms and mitigations, how they map to the code, judge Q&A prep | Everyone (worth 20 points) |
 | [08_demo_script.md](08_demo_script.md) | The 12-minute demo flow and the backup plan | Presenter |
 | [09_teammate_inputs.md](09_teammate_inputs.md) | Templates for sample notes, the rights list, the answer key and worked examples | Law teammates |
+| [10_submission_description.md](10_submission_description.md) | Draft of the short written description for the submission form | Team Lead, presenter |
 
 **AI coding assistants and new developers:** read [../AGENTS.md](../AGENTS.md) first.
 
