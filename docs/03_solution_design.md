@@ -38,16 +38,16 @@ Monitor notes / court documents
 | Step | File | Uses the model? | Starter status | Task |
 |---|---|---|---|---|
 | Case loading | `fairtrace/ingest.py` → `load_case` | No | ✅ works | — |
-| Line numbering | `fairtrace/ingest.py` → `number_hearing`, `split_paragraphs` | No | 🛠️ stub | T1 |
-| Extract events | `fairtrace/extract.py` | Yes | 🛠️ stub | T2 |
-| Flag potential issues | `fairtrace/flag.py` | Yes | 🛠️ stub | T3 |
-| Verify | `fairtrace/verify.py` | No | 🛠️ stub | T4 |
-| Review screen + audit log | `app.py`, `fairtrace/review.py` | No | ✅ log and buttons work; polish in T5 | T5 |
-| Devil's Advocate | `fairtrace/analyzers/devils_advocate.py` | Yes | ✅ module wiring; 🛠️ `run` | T6 |
-| Copy-Through Detector | `fairtrace/analyzers/copy_through.py` | No | ✅ module wiring; 🛠️ matching | T7 |
-| Questions for the monitor | `app.py` tab | No | ✅ basic list; polish in T8 | T8 |
-| Export | `fairtrace/export.py` | No | 🛠️ stub | T9 |
-| Evaluation | `fairtrace/evaluate.py`, `eval/run_eval.py` | No | ✅ answer-key loading; 🛠️ scoring | T10 |
+| Line numbering | `fairtrace/ingest.py` → `number_hearing`, `split_paragraphs` | No | ✅ built | T1 |
+| Extract events | `fairtrace/extract.py` | Yes | ✅ built | T2 |
+| Flag potential issues | `fairtrace/flag.py` | Yes | ✅ built | T3 |
+| Verify | `fairtrace/verify.py` | No | ✅ built | T4 |
+| Review screen + audit log | `app.py`, `fairtrace/review.py` | No | ✅ built | T5 |
+| Devil's Advocate | `fairtrace/analyzers/devils_advocate.py` | Yes | ✅ built | T6 |
+| Copy-Through Detector | `fairtrace/analyzers/copy_through.py` | No | ✅ built | T7 |
+| Questions for the monitor | `app.py` tab, `fairtrace/export.py` → `monitor_questions` | No | ✅ built | T8 |
+| Export | `fairtrace/export.py` | No | ✅ built | T9 |
+| Evaluation | `fairtrace/evaluate.py`, `eval/run_eval.py` | No | ✅ built | T10 |
 | Redaction | `fairtrace/redact.py` | No | 🛠️ stub | T11 |
 | LLM adapter (mock / api / local) | `fairtrace/llm.py` | — | ✅ works | — |
 | Module registry and cache | `fairtrace/analyzers/`, `fairtrace/cache.py` | — | ✅ works | — |
@@ -56,6 +56,7 @@ Monitor notes / court documents
 - **Hearing notes:** `H03-L047` = hearing H03, line 47 of the notes file, counted physically, so anyone can open the file and find line 47. Blank lines and lines starting with `#` are skipped but still counted.
 - **Documents:** `JDG-P034` = paragraph 34 of the judgment. Paragraphs are separated by blank lines; `#` lines are ignored. Prefixes come from `case.yaml`, for example `IND` (indictment), `POL` (police report), `JDG` (judgment), `BAIL` (bail decision).
 - **Only code creates IDs.** The model may cite IDs but never invent them; `verify.py` rejects any citation that doesn't exist.
+- **Extraction is stricter:** an event may cite only lines of the hearing its call was shown. An ID from another hearing must be invented, so it is dropped and logged, even though the line exists.
 - Other IDs: events `E-H01-1`, flags `F-H01-1`, Copy-Through flags `F-CT-1`.
 
 ## Data contracts
@@ -120,6 +121,8 @@ Both signature features are **modules** behind one interface (`fairtrace/analyze
 
 **What it can't tell you:** whether the copying was improper. It is a lead for the lawyer, not a finding.
 
+**Not passed through `verify_flags` in the app.** Copy-Through runs after the verify step, so its flags skip it. Nothing can be invented (no model, template text, IDs from ingest), and `test_copy_through_flags_pass_the_verifier` shows they would pass. Say so if asked whether every flag is verified.
+
 ## Devil's Advocate (model)
 **Question it answers:** what is the strongest justification the state could give for this, and does our record answer it?
 1. For each flag that isn't rejected, one model call with the flag, the right's entry and the relevant numbered lines (prompt: `prompts/devils_advocate_v1.md`).
@@ -133,7 +136,7 @@ Both signature features are **modules** behind one interface (`fairtrace/analyze
 **Why:** UN complaints routinely receive government replies, so findings get pushback. This tests every finding against that pushback before publication, and actively counters confirmation bias.
 
 ## Gap Finder (questions for the monitor)
-Every flag carries `missing_facts`, and every `not_addressed` challenge points to one too. The "Questions for the monitor" tab groups them by hearing so the monitor can answer while the hearing is fresh. It asks rather than asserts, so the risk of invented facts is close to zero.
+Every flag carries `missing_facts`, and every `not_addressed` challenge points to one too. The "Questions for the monitor" tab groups them by hearing (in case order, with the hearing date) so the monitor can answer while the hearing is fresh, and offers them as a downloadable Markdown checklist. Flags a reviewer rejected are left out. A `not_addressed` challenge becomes a templated question ("The record is silent on a possible justification: … Did anything at the hearing bear on this?"). It asks rather than asserts, so the risk of invented facts is close to zero. Code: `export.monitor_questions` and `export.questions_checklist`; the export's open-questions section uses the same function.
 
 ## Verify rules (`fairtrace/verify.py`, no model)
 **Hard failures → rejected** (shown in a separate "Rejected by the verifier" panel, never silently dropped):
@@ -146,8 +149,9 @@ Every flag carries `missing_facts`, and every `not_addressed` challenge points t
 
 ## Lawyer review and audit log
 - Statuses: `pending` → `accepted` / `rejected` / `needs_facts`.
-- Each click appends a `Decision` to `data/<case>/audit_log.jsonl` with the reviewer's name, model and prompt version. The latest decision per flag wins.
-- A reviewer name is required before any decision.
+- Each click appends a `Decision` to `data/<case>/audit_log.jsonl` with the reviewer's name, an optional note, the model that produced the run (not the sidebar mode at click time) and the prompt versions behind the card (`flag:v1`, `devils_advocate:v1`; a Copy-Through flag without a challenge logs no model). The latest decision per flag wins, and statuses are restored after every re-run.
+- A reviewer name is required before any decision: the buttons are disabled without one, and the click handler checks again.
+- Each card shows its status, the quote, the cited lines, the last decision (who, when, note), questions, missing facts, verifier notes and the Devil's Advocate. A progress bar shows how many potential issues have been reviewed.
 
 ## Export (`fairtrace/export.py`)
 Markdown draft findings:
@@ -182,7 +186,7 @@ Word export via `python-docx` is a stretch goal.
 ## User interface
 - **Sidebar:** model mode, case, module checkboxes, reviewer name, Run analysis.
 - **Tabs:** Overview (pipeline status) · Sources (numbered lines) · Issues to review (cards with sources, questions, Devil's Advocate, accept/reject) · Copy-Through · Questions for the monitor · Export · Evaluation · About.
-- Stubs show "Not built yet: T<n>" instead of crashing, so the app runs from day one.
+- Any step that is still a stub shows "Not built yet: T<n>" instead of crashing, so the app always runs.
 
 ## Out of scope for the hackathon (future work)
 From our brainstorm, roughly in order of value:

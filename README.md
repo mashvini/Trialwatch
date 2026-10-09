@@ -4,7 +4,7 @@
 
 Built for TrialWatch (Human Rights Institute, Columbia Law School) at the FairTrial & AI Hackathon, October 2026. Track 2: Observation to Legal Evaluation.
 
-> **Status: starter skeleton.** The plumbing works (configuration, model adapter, module system, audit log, app shell). The analysis steps are documented stubs to be built during the hackathon; see [AGENTS.md](AGENTS.md) and [docs/04_build_plan.md](docs/04_build_plan.md).
+> **Status: working prototype.** The full pipeline runs end to end in mock mode on the synthetic demo case: numbering, extraction, flagging, verification, Copy-Through, Devil's Advocate, lawyer review, questions for the monitor, export and evaluation. Still to do: redaction (T11), a hearings × rights heatmap (T12) and testing with a real model; see [AGENTS.md](AGENTS.md) and [docs/04_build_plan.md](docs/04_build_plan.md).
 >
 > **The tool supports legal analysis. It does not replace the lawyer's judgment.**
 
@@ -14,8 +14,8 @@ Built for TrialWatch (Human Rights Institute, Columbia Law School) at the FairTr
 - **Verifies every citation in code** and shows anything that fails, instead of hiding it.
 - **Copy-Through Detector** (switchable module, no AI): finds judgment passages copied word for word from the police report or indictment, focusing on the court's own reasoning.
 - **Devil's Advocate** (switchable module): writes the strongest justification the state could give for each issue, then checks whether the record rebuts it.
-- **Asks the monitor** for missing facts while the hearing is fresh.
-- **Lawyer review:** accept, reject or "needs facts", with every decision logged.
+- **Asks the monitor** for missing facts while the hearing is fresh, as a downloadable checklist grouped by hearing.
+- **Lawyer review:** accept, reject or "needs facts", with every decision logged (reviewer, optional note, model and prompt versions).
 - **Exports draft findings** with footnotes, using accepted issues only.
 
 ## Intended use by TrialWatch
@@ -26,7 +26,7 @@ TrialWatch lawyers and experts use FairTrace while preparing a fairness report: 
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env        # add API keys only if you use api mode
-pytest                      # skeleton tests pass; spec tests skip until each task is built
+pytest                      # spec tests skip only for tasks not built yet
 streamlit run app.py        # opens the app in mock mode
 ```
 

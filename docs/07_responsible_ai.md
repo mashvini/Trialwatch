@@ -25,13 +25,13 @@ Worth **20 of 100 points**, and it also feeds Human Rights Impact (30) and Feasi
 | Security of stored data | Case files on laptops | Local storage only; no cloud database; encryption at rest is future work | — |
 
 ## What we commit to in the code
-- [ ] No model output is used before Pydantic validation (`llm.py`)
-- [ ] No flag reaches the review screen without passing `verify_flags`
-- [ ] No Devil's Advocate verdict without a valid citation (`verify_challenge`)
-- [ ] No export without an explicit lawyer decision
-- [ ] Every decision logged with reviewer, model and prompt version
-- [ ] Temperature 0, versioned prompts
-- [ ] Mock mode always works
+- [x] No model output is used before Pydantic validation (`llm.py`)
+- [x] No model-generated flag reaches the review screen without passing `verify_flags`. Copy-Through flags (no model, template text) are added after the verify step; a test shows they pass it
+- [x] No Devil's Advocate verdict without a valid citation (`verify_challenge`)
+- [x] No export without an explicit lawyer decision
+- [x] Every decision logged with reviewer, model and prompt version
+- [x] Temperature 0, versioned prompts
+- [x] Mock mode always works
 
 ## Limitations to state openly
 - The tool only sees what monitors wrote down; it cannot judge what isn't in the record.

@@ -32,31 +32,31 @@ streamlit run app.py
 ## Repo map
 | Path | Purpose | Status |
 |---|---|---|
-| `app.py` | Streamlit shell: sidebar, pipeline runner, tabs, review buttons | ✅ runs; tabs show "Not built yet" for stubs |
+| `app.py` | Streamlit shell: sidebar, pipeline runner, tabs, review screen (T5), questions for the monitor (T8) | ✅ |
 | `config.yaml` | Mode, providers, thresholds, enabled modules, paths | ✅ |
 | `fairtrace/config.py` | Loads `config.yaml` and `.env` | ✅ |
 | `fairtrace/schemas.py` | Data contracts (change only with team agreement) | ✅ |
 | `fairtrace/llm.py` | Model adapter: mock / api / local, JSON parsing, retry, recording | ✅ |
 | `fairtrace/prompts.py` | Loads prompt files, fills `{{placeholders}}`, formats numbered lines | ✅ |
 | `fairtrace/taxonomy.py` | Loads the rights list and worked examples | ✅ |
-| `fairtrace/ingest.py` | `load_case` ✅ · `number_hearing`, `split_paragraphs` 🛠️ | T1 |
-| `fairtrace/extract.py` | Notes → events (model) | 🛠️ T2 |
-| `fairtrace/flag.py` | Events → potential issues (model) | 🛠️ T3 |
-| `fairtrace/verify.py` | Citation and wording checks (no model) | 🛠️ T4, T6 |
-| `fairtrace/review.py` | Audit log of decisions | ✅ |
+| `fairtrace/ingest.py` | `load_case`, `number_hearing`, `split_paragraphs` | ✅ T1 |
+| `fairtrace/extract.py` | Notes → events (model); keeps only citations to the hearing's own lines | ✅ T2 |
+| `fairtrace/flag.py` | Events → potential issues (model) | ✅ T3 |
+| `fairtrace/verify.py` | Citation and wording checks (no model) | ✅ T4, T6 |
+| `fairtrace/review.py` | Audit log of decisions, latest decision per flag | ✅ |
 | `fairtrace/analyzers/base.py` | Module interface | ✅ |
 | `fairtrace/analyzers/__init__.py` | `REGISTRY` and stage ordering | ✅ |
-| `fairtrace/analyzers/copy_through.py` | Copy-Through Detector: availability ✅ · matching 🛠️ | T7 |
-| `fairtrace/analyzers/devils_advocate.py` | Devil's Advocate: availability and apply ✅ · run 🛠️ | T6 |
+| `fairtrace/analyzers/copy_through.py` | Copy-Through Detector: matching, coverage, `F-CT` flags | ✅ T7 |
+| `fairtrace/analyzers/devils_advocate.py` | Devil's Advocate: one call per flag, checked by `verify_challenge` | ✅ T6 |
 | `fairtrace/cache.py` | Caches module results so toggling never repeats model calls | ✅ |
-| `fairtrace/export.py` | Draft findings in Markdown | 🛠️ T9 |
-| `fairtrace/evaluate.py` | Answer-key loading ✅ · scoring 🛠️ | T10 |
+| `fairtrace/export.py` | Draft findings in Markdown (T9); questions for the monitor and their checklist (T8) | ✅ T9 |
+| `fairtrace/evaluate.py` | Answer-key loading and scoring | ✅ T10 |
 | `fairtrace/redact.py` | `load_names` ✅ · redact/restore 🛠️ | T11 |
 | `prompts/` | `extract_v1.md`, `flag_v1.md`, `devils_advocate_v1.md` (drafts) | Law team reviews |
 | `taxonomy/` | `rights.yaml` (8 rights, draft), `worked_examples.yaml` (draft) | Law team reviews |
 | `data/demo_case/` | Synthetic case: 2 hearings, 3 documents, answer key | ✅ |
 | `fixtures/mock/` | Saved outputs for mock mode (see `fixtures/README.md`) | ✅ |
-| `tests/` | `test_skeleton.py`, `test_app_smoke.py` pass now; `test_spec_*.py` define each task | ✅ |
+| `tests/` | `test_skeleton.py`, `test_app_smoke.py`, `test_monitor_questions.py`; `test_spec_*.py` define each task | ✅ |
 
 ## How stubs and spec tests work
 - Each stub raises `NotImplementedError("T<n>: ...")`. The app catches it and shows "Not built yet", so the app always runs.
