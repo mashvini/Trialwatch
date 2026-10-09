@@ -1,6 +1,6 @@
 # Written description (draft for the submission form)
 
-The rules ask for "a short written description of the tool and its intended use by TrialWatch". This is a draft of about 350 words. Team: edit freely, add the repository link and team name, and keep the evaluation sentence honest (it describes mock mode until a real-model run is recorded).
+The rules ask for "a short written description of the tool and its intended use by TrialWatch". This is a draft of about 400 words. Team: edit freely, add the repository link and team name, and keep the evaluation sentence honest (it describes mock mode until a real-model run is recorded).
 
 ---
 

@@ -7,7 +7,8 @@ Aim for 12 minutes so there's room within the 10–15 minute slot. Rehearse twic
 - [ ] Demo case selected; reviewer name filled in; all modules unticked (you'll switch them on during the demo)
 - [ ] Browser zoom at about 125% so the back row can read it
 - [ ] Backup video open in another tab
-- [ ] Evaluation numbers filled in on the slide
+- [ ] Evaluation numbers filled in on the slide, labeled "mock mode" (see the Results section of the README)
+- [ ] `python -m eval.check_submission` shows no FAIL
 
 ## Flow
 | Time | Who | What to show | What to say |
@@ -20,7 +21,7 @@ Aim for 12 minutes so there's room within the 10–15 minute slot. Rehearse twic
 | 6:00–7:30 | Coder | Tick **Copy-Through** | Paragraph 3 of the judgment repeats the police report word for word, inside the court's own reasoning. The quoted charges in paragraph 1 are *not* flagged: quoting the charges is normal |
 | 7:30–9:00 | Coder | Tick **Devil's Advocate** | On the Copy-Through flag: the state could argue the court was only summarizing; the record rebuts that, because the passage is in the reasoning section. On another flag the record is silent, so it becomes a question for the monitor |
 | 9:00–9:45 | Coder | **Questions for the monitor**, then **Export** | Questions grouped by hearing; draft findings with footnotes, accepted issues only |
-| 9:45–10:45 | Presenter | **Evaluation** tab / slide | Caught [X] of [Y] expected issues, [Z] false alarms on the clean hearing, every citation verified |
+| 9:45–10:45 | Presenter | **Evaluation** tab / slide | In mock mode: caught 6 of 6 expected issues, 0 false alarms on the clean hearing, every citation verified. Say that this replays saved outputs, so it shows the guardrails and scoring work; real-model accuracy is the next step (or quote a recorded real-model run, if there is one) |
 | 10:45–12:00 | Presenter | Slide: responsible AI and deployment | Local mode for confidential data; lawyers edit the rights list; limitations; next steps |
 
 ## If something breaks

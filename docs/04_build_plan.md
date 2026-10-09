@@ -113,12 +113,14 @@ Cut from the top down:
 | A teammate is missing | Follow the cut list; the presenter can run the demo in mock mode |
 
 ## Submission checklist (by 15:15 Saturday)
+Run `python -m eval.check_submission` first: it checks the git history for secrets and runtime data, the synthetic labels and the demo numbers, and lists placeholders still to fill.
+
 - [ ] GitHub repository is public, and its link is submitted
-- [ ] `LICENSE` present (MIT proposed; team to confirm) and named in the README
-- [ ] README: what it does, intended use by TrialWatch, setup (3 commands), modes, data sources with licenses, AI-assistance disclosure, limitations, team
-- [ ] Short written description submitted
-- [ ] No secrets, real case data or `names.yaml` in the repo (check `git log` too)
-- [ ] Demo case labeled as synthetic wherever it appears
+- [ ] `LICENSE` present (MIT proposed; team to confirm) and named in the README. Present and named; replace `[Team Name]` with the copyright holder
+- [ ] README: what it does, intended use by TrialWatch, setup (3 commands), modes, data sources with licenses, AI-assistance disclosure, limitations, team. Everything except the team section and the team's confirmation of the AI disclosure
+- [ ] Short written description submitted. Draft in [10_submission_description.md](10_submission_description.md)
+- [x] No secrets, real case data or `names.yaml` in the repo, including `git log` (checked by `eval.check_submission`; re-run before making the repo public)
+- [x] Demo case labeled as synthetic wherever it appears (checked by `eval.check_submission`)
 - [ ] Real model outputs saved to `fixtures/mock/` so the demo works offline
 - [ ] Backup video recorded
 - [ ] Slides include the responsible-AI section and the evaluation numbers

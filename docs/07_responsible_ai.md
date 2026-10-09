@@ -60,7 +60,7 @@ It does the opposite: it anticipates the state's reply before publication, so fi
 On a laptop: Python plus one command. No servers or database. It can run with a local model for confidential cases. The rights list and prompts are plain files their lawyers can edit.
 
 **"How do you know it works?"**
-On our test set it caught [X] of [Y] expected issues, with [Z] false alarms on a hearing that had no problems, and every displayed citation was verified. (Fill in on Saturday.)
+On our synthetic demo case, in mock mode, it caught 6 of 6 expected issues, with 0 false alarms on the hearing that had no problems, and every displayed citation was verified. The planted bad citation was rejected. Be clear that mock mode replays saved outputs: these numbers show that the checks and scoring work, not how accurate a model is. Real-model accuracy is the next measurement, on notes the tool hasn't seen. (If a recorded `api` or `local` run is scored before the demo, quote that instead, with the model name.)
 
 **"What about bias?"**
 Lawyers own the legal categories and examples, outputs are compared only in their original language, the Devil's Advocate counters one-sided analysis, and we publish our limitations.
