@@ -44,4 +44,20 @@ def evaluate(flags: list[Flag], key: AnswerKey, line_ids: set[str]) -> dict:
        "false_alarms": int, "citation_rate": float, "flags_total": int,
        "not_detectable": [item ids with detectable_by_mvp=False]}
     """
-    raise NotImplementedError("T10: evaluation (see the docstring in evaluate.py)")
+    detectable = [item for item in key.expected if item.detectable_by_mvp]
+    caught = [item.id for item in detectable if _is_caught(item, flags)]
+    clean_prefixes = tuple(f"{h}-L" for h in key.clean_hearings)
+    return {
+        "caught": caught,
+        "missed": [item.id for item in detectable if item.id not in caught],
+        "recall": len(caught) / len(detectable) if detectable else 0.0,
+        "false_alarms": sum(1 for f in flags if clean_prefixes and any(s.startswith(clean_prefixes) for s in f.source_ids)),
+        "citation_rate": sum(1 for f in flags if set(f.source_ids) <= line_ids) / len(flags) if flags else 1.0,
+        "flags_total": len(flags),
+        "not_detectable": [item.id for item in key.expected if not item.detectable_by_mvp],
+    }
+
+
+def _is_caught(item: AnswerItem, flags: list[Flag]) -> bool:
+    """Same right and at least one shared source id."""
+    return any(f.right_id == item.right_id and set(f.source_ids) & set(item.source_ids) for f in flags)
