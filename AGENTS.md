@@ -49,6 +49,7 @@ streamlit run app.py
 | `fairtrace/analyzers/copy_through.py` | Copy-Through Detector: matching, coverage, `F-CT` flags | ✅ T7 |
 | `fairtrace/analyzers/devils_advocate.py` | Devil's Advocate: one call per flag, checked by `verify_challenge` | ✅ T6 |
 | `fairtrace/cache.py` | Caches module results so toggling never repeats model calls | ✅ |
+| `fairtrace/heatmap.py` | Hearings × rights grid of potential issues, shown on the Overview tab | ✅ T12 |
 | `fairtrace/export.py` | Draft findings in Markdown (T9); questions for the monitor and their checklist (T8) | ✅ T9 |
 | `fairtrace/evaluate.py` | Answer-key loading and scoring | ✅ T10 |
 | `fairtrace/redact.py` | `load_names`, `redact`, `restore`, `redact_lines` (applied right after ingest) | ✅ T11 |
@@ -56,7 +57,7 @@ streamlit run app.py
 | `taxonomy/` | `rights.yaml` (8 rights, draft), `worked_examples.yaml` (draft) | Law team reviews |
 | `data/demo_case/` | Synthetic case: 2 hearings, 3 documents, answer key | ✅ |
 | `fixtures/mock/` | Saved outputs for mock mode (see `fixtures/README.md`) | ✅ |
-| `tests/` | `test_skeleton.py`, `test_app_smoke.py`, `test_monitor_questions.py`; `test_spec_*.py` define each task | ✅ |
+| `tests/` | `test_skeleton.py`, `test_app_smoke.py`, `test_monitor_questions.py`, `test_redaction_wiring.py`, `test_heatmap.py`; `test_spec_*.py` define each task | ✅ |
 
 ## How stubs and spec tests work
 - Each stub raises `NotImplementedError("T<n>: ...")`. The app catches it and shows "Not built yet", so the app always runs.

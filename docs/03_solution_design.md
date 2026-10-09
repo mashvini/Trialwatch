@@ -188,6 +188,7 @@ Word export via `python-docx` is a stretch goal.
 ## User interface
 - **Sidebar:** model mode, case, module checkboxes, reviewer name, Run analysis.
 - **Tabs:** Overview (pipeline status) · Sources (numbered lines) · Issues to review (cards with sources, questions, Devil's Advocate, accept/reject) · Copy-Through · Questions for the monitor · Export · Evaluation · About.
+- **Overview** also shows a hearings × rights heatmap (T12, `fairtrace/heatmap.py`): potential issues per cell, rights in `rights.yaml` order, a "Court documents" row for Copy-Through flags, and a toggle between flags not rejected by a reviewer and accepted flags only. Empty cells are grey; hovering shows the flag IDs. It is a count, not a measure of fairness.
 - Any step that is still a stub shows "Not built yet: T<n>" instead of crashing, so the app always runs.
 
 ## Out of scope for the hackathon (future work)
@@ -201,4 +202,3 @@ From our brainstorm, roughly in order of value:
 - **Translation-Risk Highlighter.**
 - **Detention & Delay Clock.**
 - **Case Benchmarking** against the Pressing Charges dataset (license to be checked).
-- **Hearings × rights heatmap** (a stretch goal in T12).

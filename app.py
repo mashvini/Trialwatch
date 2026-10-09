@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import altair as alt
 import streamlit as st
 
-from fairtrace import evaluate, export, extract, flag, ingest, redact, review, verify
+from fairtrace import evaluate, export, extract, flag, heatmap, ingest, redact, review, verify
 from fairtrace.analyzers import REGISTRY, in_stage_order
 from fairtrace.cache import get_or_run
 from fairtrace.config import VALID_MODES, load_settings
@@ -204,6 +205,37 @@ def render_flag(f: Flag, rec: CaseRecord, last: Decision | None) -> None:
                 st.rerun()
 
 
+def render_heatmap(rec: CaseRecord) -> None:
+    """T12: potential issues by right and hearing, to show where problems cluster."""
+    st.subheader("Where potential issues cluster")
+    scope = st.radio(
+        "Count", ["Not rejected by a reviewer", "Accepted only"], horizontal=True, key="heatmap-scope"
+    )
+    keep = ("accepted",) if scope == "Accepted only" else ("pending", "accepted", "needs_facts")
+    grid = heatmap.issue_grid(rec, rights, [f for f in rec.flags if f.status in keep])
+    base = alt.Chart(alt.Data(values=grid)).encode(
+        x=alt.X("hearing:N", title=None, sort=None, axis=alt.Axis(orient="top", labelAngle=0)),
+        y=alt.Y("right:N", title=None, sort=[r.name for r in rights], axis=alt.Axis(labelLimit=320)),
+    )
+    shade = alt.Color(
+        "count:Q",
+        title="Potential issues",
+        scale=alt.Scale(scheme="blues", domainMin=0),
+        legend=alt.Legend(values=list(range(max(c["count"] for c in grid) + 1)), format="d"),  # whole numbers only
+    )
+    cells = base.mark_rect(stroke="white").encode(
+        # Empty cells stay neutral grey, so "none" never reads as a small amount.
+        color=alt.condition("datum.count > 0", shade, alt.value("#f0f2f6")),
+        tooltip=[alt.Tooltip("right:N"), alt.Tooltip("hearing:N"), alt.Tooltip("count:Q"), alt.Tooltip("flags:N")],
+    )
+    labels = base.mark_text().encode(
+        text=alt.condition("datum.count > 0", "count:Q", alt.value("")),
+        color=alt.condition("datum.count > 1", alt.value("white"), alt.value("black")),
+    )
+    st.altair_chart((cells + labels).properties(height=34 * len(rights)), use_container_width=True)
+    st.caption("A count of potential issues, not a measure of fairness. Hover a cell for its flag IDs.")
+
+
 tabs = st.tabs(
     ["Overview", "Sources", "Issues to review", "Copy-Through", "Questions for the monitor", "Export", "Evaluation", "About"]
 )
@@ -223,6 +255,8 @@ with tabs[0]:
         c2.metric("Events", len(record.events))
         c3.metric("Potential issues", len(record.flags))
         c4.metric("Challenges", len(record.challenges))
+        if record.flags:
+            render_heatmap(record)
 
 # ------------------------------------------------------------------ Sources
 with tabs[1]:
