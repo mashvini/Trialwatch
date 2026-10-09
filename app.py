@@ -7,7 +7,6 @@ it and shows "Not built yet" instead of crashing, so the app runs from day one a
 """
 from __future__ import annotations
 
-from collections import defaultdict
 from pathlib import Path
 
 import streamlit as st
@@ -279,18 +278,29 @@ with tabs[3]:
 
 # ------------------------------------------------------------------ Questions for the monitor (Gap Finder)
 with tabs[4]:
-    by_hearing: dict[str, list[tuple[str, str]]] = defaultdict(list)
-    for f in (record.flags if record is not None else []):
-        if f.status == "rejected":
-            continue
-        hearing = f.source_ids[0].split("-")[0] if f.source_ids else "?"
-        for q in f.missing_facts:
-            by_hearing[hearing].append((q, f.id))
-    if not by_hearing:
-        st.info("Missing facts from potential issues appear here as questions for the monitor (T8 polishes this).")
+    if record is None:
+        st.info("Run the analysis first.")
     else:
-        for hearing, items in sorted(by_hearing.items()):
-            st.markdown(f"**{hearing}**\n" + "\n".join(f"- {q} *(from `{fid}`)*" for q, fid in items))
+        st.caption(
+            "Facts the notes don't record, asked rather than assumed, so the monitor can answer while the "
+            "hearing is fresh. From each potential issue's missing facts, and from Devil's Advocate checks "
+            "where the record is silent. Potential issues a reviewer rejected are left out."
+        )
+        groups = export.monitor_questions(record, ("pending", "accepted", "needs_facts"), include_challenges=True)
+        if not groups:
+            st.info("No open questions for the monitor.")
+        else:
+            total = sum(len(items) for items in groups.values())
+            st.download_button(
+                f"Download checklist for the monitor ({total} questions, .md)",
+                export.questions_checklist(record, groups),
+                file_name=f"{record.case.id}_questions_for_monitor.md",
+            )
+            for label, items in groups.items():
+                st.markdown(f"**{label}**")
+                for item in items:
+                    origin = " · Devil's Advocate" if item.source == "devils_advocate" else ""
+                    st.markdown(f"- {item.question} *(`{item.flag_id}`{origin})*")
 
 # ------------------------------------------------------------------ Export
 with tabs[5]:
