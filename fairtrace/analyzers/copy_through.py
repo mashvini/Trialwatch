@@ -7,11 +7,18 @@ Compare documents only in the same language (never a translation against an orig
 """
 from __future__ import annotations
 
+import difflib
+import re
+
+from rapidfuzz import fuzz, process
+
 from ..config import Settings
-from ..schemas import CaseRecord, CopyReport, Flag
+from ..ingest import paragraph_number
+from ..schemas import CaseRecord, CopyMatch, CopyReport, Flag
 from .base import Analyzer
 
 SOURCE_TYPES = ("indictment", "police_report")
+_PUNCTUATION = re.compile(r"[^\w\s]")
 
 
 def normalize_words(text: str) -> list[str]:
@@ -21,7 +28,7 @@ def normalize_words(text: str) -> list[str]:
              ["having", "considered", "the", "evidence", "the", "court", "finds"]
     (Thai has no spaces between words: use a word segmenter such as PyThaiNLP, or character runs.)
     """
-    raise NotImplementedError("T7: normalize words (see copy_through.py)")
+    return _PUNCTUATION.sub(" ", text.lower()).split()
 
 
 def shared_runs(source_words: list[str], judgment_words: list[str], min_words: int) -> list[tuple[int, int, int]]:
@@ -32,7 +39,8 @@ def shared_runs(source_words: list[str], judgment_words: list[str], min_words: i
     and keep the blocks with size >= min_words. (SequenceMatcher returns non-overlapping blocks in
     order, which is enough here.)
     """
-    raise NotImplementedError("T7: shared runs (see copy_through.py)")
+    matcher = difflib.SequenceMatcher(None, source_words, judgment_words, autojunk=False)
+    return [(b.a, b.b, b.size) for b in matcher.get_matching_blocks() if b.size >= min_words]
 
 
 class CopyThrough(Analyzer):
@@ -79,7 +87,53 @@ class CopyThrough(Analyzer):
 
         Spec: tests/test_spec_copy_through.py
         """
-        raise NotImplementedError("T7: copy-through matching (see copy_through.py)")
+        cfg = settings.copy_through
+        sources = [
+            (line.id, normalize_words(line.text))
+            for doc in record.documents_of_type(*SOURCE_TYPES)
+            for line in record.lines_for(doc.id)
+        ]
+        choices = [" ".join(words) for _, words in sources]
+        matches: list[CopyMatch] = []
+        covered = total = covered_reasoning = total_reasoning = 0
+        has_range = False
+        for doc in record.documents_of_type("judgment"):
+            has_range = has_range or doc.reasoning_paragraphs is not None
+            for para in record.lines_for(doc.id):
+                words = normalize_words(para.text)
+                in_reasoning = _in_range(paragraph_number(para.id), doc.reasoning_paragraphs)
+                copied: set[int] = set()
+                candidates = process.extract(
+                    " ".join(words), choices, scorer=fuzz.token_set_ratio, limit=cfg["candidates_per_paragraph"]
+                )
+                for _, score, index in candidates:
+                    source_id, source_words = sources[index]
+                    runs = shared_runs(source_words, words, cfg["min_shared_words"])
+                    if not runs:
+                        continue
+                    for _, start, size in runs:
+                        copied.update(range(start, start + size))
+                    _, start, size = max(runs, key=lambda run: run[2])
+                    matches.append(
+                        CopyMatch(
+                            judgment_id=para.id,
+                            source_id=source_id,
+                            shared_text=" ".join(words[start : start + size]),
+                            shared_words=size,
+                            similarity=float(score),
+                            in_reasoning=in_reasoning,
+                        )
+                    )
+                covered += len(copied)
+                total += len(words)
+                if in_reasoning:
+                    covered_reasoning += len(copied)
+                    total_reasoning += len(words)
+        return CopyReport(
+            matches=matches,
+            coverage_overall=covered / total if total else 0.0,
+            coverage_reasoning=(covered_reasoning / total_reasoning if total_reasoning else 0.0) if has_range else None,
+        )
 
     def apply(self, record: CaseRecord, result: CopyReport, settings: Settings) -> None:
         record.copy_report = result
@@ -102,4 +156,29 @@ def flags_from_report(report: CopyReport, settings: Settings) -> list[Flag]:
 
     Spec: tests/test_spec_copy_through.py
     """
-    raise NotImplementedError("T7: flags from copy-through matches (see copy_through.py)")
+    cfg = settings.copy_through
+    strong = [m for m in report.matches if m.in_reasoning and m.shared_words >= cfg["flag_min_shared_words"]]
+    return [
+        Flag(
+            id=f"F-CT-{n}",
+            origin="copy_through",
+            right_id=cfg["right_id"],
+            source_ids=[m.judgment_id, m.source_id],
+            quote=m.shared_text,
+            explanation=(
+                f"Potential issue: {m.judgment_id} of the judgment repeats {m.shared_words} words "
+                f"of {m.source_id} word for word, inside the court's own reasoning. Check whether "
+                "the court assessed the evidence independently."
+            ),
+            questions_for_lawyer=[
+                "Did the court assess this evidence independently?",
+                "Does the judgment give its own reasons for this finding?",
+            ],
+        )
+        for n, m in enumerate(strong, start=1)
+    ]
+
+
+def _in_range(number: int, bounds: tuple[int, int] | None) -> bool:
+    """Is paragraph `number` inside the inclusive (first, last) range?"""
+    return bounds is not None and bounds[0] <= number <= bounds[1]
