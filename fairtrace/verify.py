@@ -4,6 +4,10 @@ This module is the main answer to "how do you stop the AI from inventing things?
 """
 from __future__ import annotations
 
+import re
+
+from rapidfuzz import fuzz, utils
+
 from .config import Settings
 from .schemas import CaseRecord, Challenge, Flag
 from .taxonomy import Right
@@ -15,7 +19,7 @@ def banned_words_in(text: str, banned: list[str]) -> list[str]:
     Example: banned_words_in("A clear violation.", ["violation", "guilty"]) -> ["violation"]
     "Violations" does not match "violation" unless it is in the list itself (config lists both).
     """
-    raise NotImplementedError("T4: banned word check (see the docstring in verify.py)")
+    return [word for word in banned if re.search(rf"\b{re.escape(word)}\b", text, re.IGNORECASE)]
 
 
 def verify_flags(
@@ -35,7 +39,40 @@ def verify_flags(
 
     Spec: tests/test_spec_verify.py
     """
-    raise NotImplementedError("T4: verify flags (see the docstring in verify.py)")
+    right_ids = {r.id for r in rights}
+    lines = record.lines_by_id()
+    threshold = settings.verify["quote_match_threshold"]
+    banned = settings.verify.get("banned_words", [])
+    passed: list[Flag] = []
+    rejected: list[Flag] = []
+    for flag in flags:
+        failures = _hard_failures(flag, right_ids, lines, threshold)
+        notes = list(flag.verifier_notes) + failures
+        found = banned_words_in(flag.explanation, banned)
+        if found:
+            notes.append(f"Wording: the explanation uses conclusory words ({', '.join(found)}). Rephrase as a potential issue.")
+        checked = flag.model_copy(update={"verifier_notes": notes})
+        (rejected if failures else passed).append(checked)
+    return passed, rejected
+
+
+def _hard_failures(flag: Flag, right_ids: set[str], lines: dict, threshold: float) -> list[str]:
+    """Reasons this flag must be rejected; empty if it passes."""
+    failures: list[str] = []
+    if flag.right_id not in right_ids:
+        failures.append(f"Rejected: right '{flag.right_id}' is not in the rights list.")
+    if not flag.source_ids:
+        failures.append("Rejected: the flag cites no source lines.")
+        return failures
+    unknown = [sid for sid in flag.source_ids if sid not in lines]
+    if unknown:
+        failures.append(f"Rejected: cited lines do not exist: {', '.join(unknown)}.")
+    cited = [lines[sid].text for sid in flag.source_ids if sid in lines]
+    if cited and not any(
+        fuzz.partial_ratio(flag.quote, text, processor=utils.default_process) >= threshold for text in cited
+    ):
+        failures.append(f'Rejected: the quote "{flag.quote}" does not match any cited line.')
+    return failures
 
 
 def verify_challenge(challenge: Challenge, record: CaseRecord) -> Challenge:
