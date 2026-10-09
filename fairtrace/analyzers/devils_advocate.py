@@ -3,9 +3,18 @@ and whether the record rebuts it. Counters confirmation bias before a report is 
 """
 from __future__ import annotations
 
+import json
+import logging
+
+import yaml
+
+from .. import prompts, verify
 from ..config import Settings
-from ..schemas import CaseRecord, ChallengeSet
+from ..schemas import CaseRecord, Challenge, ChallengeSet, Flag, SourceLine
+from ..taxonomy import load_rights
 from .base import Analyzer
+
+log = logging.getLogger(__name__)
 
 
 class DevilsAdvocate(Analyzer):
@@ -38,7 +47,37 @@ class DevilsAdvocate(Analyzer):
 
         Spec: tests/test_spec_devils_advocate.py
         """
-        raise NotImplementedError("T6: Devil's Advocate (see devils_advocate.py)")
+        system, user_template, _version = prompts.load_prompt(settings, "devils_advocate")
+        rights = {r.id: r for r in load_rights(settings)}
+        challenges: list[Challenge] = []
+        for flag in record.flags:
+            if flag.status == "rejected":
+                continue
+            right = rights.get(flag.right_id)
+            user = prompts.render(
+                user_template,
+                flag=json.dumps(flag.model_dump(exclude={"status", "verifier_notes"}), indent=1, ensure_ascii=False),
+                right=yaml.safe_dump(right.model_dump(), sort_keys=False, allow_unicode=True) if right else flag.right_id,
+                lines=prompts.format_lines(_context_lines(flag, record)),
+            )
+            raw = llm.complete_model("devils_advocate", system, user, Challenge, key="challenges", mock_key=flag.id)
+            # The shared mock fixture (and a confused model) can return challenges for other flags.
+            match = next((c for c in raw if c.flag_id == flag.id), None)
+            if match is None:
+                log.warning("Devil's Advocate returned no challenge for %s", flag.id)
+                continue
+            challenges.append(verify.verify_challenge(match, record))
+        return ChallengeSet(challenges=challenges)
 
     def apply(self, record: CaseRecord, result: ChallengeSet, settings: Settings) -> None:
         record.challenges = list(result.challenges)
+
+
+def _context_lines(flag: Flag, record: CaseRecord) -> list[SourceLine]:
+    """All lines of every hearing the flag cites, plus the document paragraphs it cites."""
+    hearing_ids = {h.id for h in record.case.hearings}
+    by_id = record.lines_by_id()
+    cited = [by_id[sid] for sid in flag.source_ids if sid in by_id]
+    hearings = {line.doc for line in cited if line.doc in hearing_ids}
+    paragraphs = {line.id for line in cited if line.doc not in hearing_ids}
+    return [line for line in record.source_lines if line.doc in hearings or line.id in paragraphs]

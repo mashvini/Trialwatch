@@ -85,4 +85,10 @@ def verify_challenge(challenge: Challenge, record: CaseRecord) -> Challenge:
 
     Spec: tests/test_spec_verify.py
     """
-    raise NotImplementedError("T6: verify challenge (see the docstring in verify.py)")
+    known = record.line_ids()
+    valid = [sid for sid in challenge.source_ids if sid in known]
+    update: dict = {"source_ids": valid}
+    if challenge.verdict in ("rebutted", "supported") and not valid:
+        update["verdict"] = "not_addressed"
+        update["reasoning"] = challenge.reasoning + " (Verdict downgraded: no valid citation.)"
+    return challenge.model_copy(update=update)
