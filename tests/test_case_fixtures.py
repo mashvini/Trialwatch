@@ -2,8 +2,31 @@
 from __future__ import annotations
 
 import json
+import sys
 
+from helpers import ROOT
+
+from fairtrace import ingest
 from fairtrace.llm import LLM
+
+sys.path.insert(0, str(ROOT))
+from eval.run_eval import score  # noqa: E402
+
+CUMPIO = ROOT / "data" / "philippines_cumpio"
+
+
+def test_reconstructed_cumpio_case_runs_in_mock_mode():
+    result = score(CUMPIO, "mock")
+    assert result["caught"] == ["A1", "A2", "A3"] and result["not_detectable"] == ["A4"]
+    assert result["rejected_by_verifier"] == [] and result["citation_rate"] == 1.0
+
+
+def test_reconstructed_case_is_labeled_and_cites_its_source():
+    case = ingest.load_case(CUMPIO)
+    assert not case.synthetic and case.provenance
+    assert "hri.law.columbia.edu" in (CUMPIO / "case.yaml").read_text(encoding="utf-8")
+    for path in (CUMPIO / "hearings").glob("*.txt"):
+        assert path.read_text(encoding="utf-8").startswith("# RECONSTRUCTED"), path.name
 
 
 def test_case_folder_wins_over_the_shared_folder(settings, tmp_path, monkeypatch):

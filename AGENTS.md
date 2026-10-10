@@ -56,6 +56,7 @@ streamlit run app.py
 | `prompts/` | `extract_v1.md`, `flag_v1.md`, `devils_advocate_v1.md` (drafts) | Law team reviews |
 | `taxonomy/` | `rights.yaml` (8 rights, draft), `worked_examples.yaml` (draft) | Law team reviews |
 | `data/demo_case/` | Synthetic case: 2 hearings, 3 documents, answer key | ✅ |
+| `data/philippines_cumpio/` | Real case reconstructed from a public TrialWatch article (`provenance` in `case.yaml`): 4 thematic sessions, no documents, answer key; fixtures in `fixtures/mock/cumpio_reconstructed/` | ✅ |
 | `fixtures/mock/` | Saved outputs for mock mode (see `fixtures/README.md`) | ✅ |
 | `tests/` | `test_skeleton.py`, `test_app_smoke.py`, `test_monitor_questions.py`, `test_redaction_wiring.py`, `test_heatmap.py`; `test_spec_*.py` define each task | ✅ |
 
@@ -93,10 +94,10 @@ streamlit run app.py
 Each stub's docstring contains its exact spec. Read it before writing code.
 
 ## Mock fixtures
-- Lookup order: `fixtures/mock/<prompt>.<key>.json`, then `fixtures/mock/<prompt>.json`.
+- Lookup order: `fixtures/mock/<case_id>/<prompt>.<key>.json`, `fixtures/mock/<case_id>/<prompt>.json`, then the same two names directly under `fixtures/mock/` (the shared folder the demo case uses). A new case gets its own folder, so its `H01` never replays another case's outputs.
 - Keys: the hearing ID for `extract` and `flag` (for example `flag.H01.json`); the flag ID for `devils_advocate`. The shared `devils_advocate.json` holds challenges for all flags, so filter by `flag_id`.
 - The fixtures contain **two deliberate mistakes** to demonstrate the guardrails: flag `F-H01-6` quotes text that isn't in its cited line (T4 must reject it), and the challenge for `F-H01-4` cites a line that doesn't exist (T6 must downgrade it).
-- To record real outputs: set `FAIRTRACE_RECORD=1`; files land in `fixtures/recorded/`. Copy good ones into `fixtures/mock/`.
+- To record real outputs: set `FAIRTRACE_RECORD=1`; files land in `fixtures/recorded/<case_id>/`. Copy good ones into `fixtures/mock/<case_id>/` (the demo case's live directly in `fixtures/mock/`).
 
 ## Conventions
 - Python 3.11+, type hints, short functions with docstrings that say what and why.

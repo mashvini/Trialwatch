@@ -18,6 +18,12 @@ Saved model outputs used in **mock mode**: by tests, while building the UI, and 
 Keep both when you replace these files with real outputs; they make the demo's guardrail moment reliable.
 
 ## Recording real outputs
-Run with `FAIRTRACE_RECORD=1` in `api` or `local` mode. Outputs are saved to `fixtures/recorded/` (git-ignored) under the same names. Review them, then copy the good ones into `fixtures/mock/`.
+Run with `FAIRTRACE_RECORD=1` in `api` or `local` mode. Outputs are saved to `fixtures/recorded/<case_id>/` (git-ignored) under the same names. Review them, then copy the good ones into that case's fixtures folder.
 
-All fixture content refers to the **synthetic** demo case in `data/demo_case/`.
+## One folder per case
+The files directly in `fixtures/mock/` belong to the **synthetic** demo case in `data/demo_case/`. Any other case keeps its fixtures in `fixtures/mock/<case_id>/`, which is searched first, so hearing IDs never collide.
+
+| Folder | Case | What it is |
+| --- | --- | --- |
+| `fixtures/mock/` | `data/demo_case/` | Synthetic; includes the two deliberate mistakes above |
+| `fixtures/mock/cumpio_reconstructed/` | `data/philippines_cumpio/` | Written for the demo to follow the concerns in a public TrialWatch article; not recorded from a model. No planted mistakes |

@@ -1,0 +1,31 @@
+# Expected potential issues for the RECONSTRUCTED Cumpio case (see case.yaml for the source).
+# DRAFT mapping, law team to confirm: TrialWatch's five questions mapped onto our rights list.
+#   - Detention of over five years with repeated postponements -> trial_without_undue_delay (the
+#     article cites ICCPR Art. 14(3)(c)).
+#   - The weapons account (unseen by the entry team, "very obvious" to the search team) and the
+#     credibility of protected former-insurgent witnesses -> presumption_of_innocence (burden of proof).
+#   - The raid's timing after the Commission on Human Rights letter, and the removal from the room,
+#     are not mapped to a right: the tool raises them as questions for the monitor.
+#   - Whether the court answers these questions in its reasoning needs the judgment, which is not
+#     public: A4 is listed but not counted.
+# Matching rule: caught if a flag has the same right_id and cites at least one of the source_ids.
+case_id: cumpio_reconstructed
+expected:
+  - id: A1
+    right_id: trial_without_undue_delay
+    source_ids: [H04-L005, H04-L006]
+    note: Detained for over five years before a verdict; repeated postponements, no reasons recorded.
+  - id: A2
+    right_id: presumption_of_innocence
+    source_ids: [H02-L009, H02-L010, H02-L015, H02-L017]
+    note: Weapons unseen by the entry team, then "very obvious" to the search team after the defendants were removed.
+  - id: A3
+    right_id: presumption_of_innocence
+    source_ids: [H03-L006, H03-L008, H03-L009]
+    note: Protected former-insurgent witnesses; one claim about 2010 contradicted by birth and school records.
+  - id: A4
+    right_id: reasoned_judgment
+    source_ids: []
+    note: Does the judgment answer the five questions? Needs the judgment text, which is not public.
+    detectable_by_mvp: false
+clean_hearings: []   # the source describes no session without concerns

@@ -4,7 +4,7 @@
 
 Built for TrialWatch (Human Rights Institute, Columbia Law School) at the FairTrial & AI Hackathon, October 2026. Track 2: Observation to Legal Evaluation.
 
-> **Status: working prototype.** Every pipeline step and both modules are built and run end to end in mock mode on a synthetic demo case. The prompts have not yet been evaluated with a real model; see [Results](#results).
+> **Status: working prototype.** Every pipeline step and both modules are built and run end to end in mock mode on a synthetic demo case and on a real case reconstructed from public reporting. The prompts have not yet been evaluated with a real model; see [Results](#results).
 >
 > **The tool supports legal analysis. It does not replace the lawyer's judgment.**
 
@@ -44,6 +44,8 @@ On Windows, activate with `.venv\Scripts\activate` and copy with `copy .env.exam
 
 Command line: `python -m eval.run_eval data/demo_case mock` scores a case without the app.
 
+**Second case:** pick `philippines_cumpio` in the sidebar for a real case, the trial of journalist Frenchie Mae Cumpio in the Philippines, reconstructed from a public TrialWatch article (see [data/README.md](data/README.md)). It shows the tool on real concerns: 3 potential issues, a Devil's Advocate verdict the record supports, and questions for the monitor. Copy-Through is skipped because no judgment text is public.
+
 A new case is a folder under `data/` with a `case.yaml`, one text file per hearing and the court documents; see [data/README.md](data/README.md).
 
 ## Model modes
@@ -77,6 +79,7 @@ fairtrace/              the package: ingest, redact, extract, flag, verify, revi
 prompts/                versioned prompt files (lawyers can edit)
 taxonomy/               rights list and worked examples (lawyers own these)
 data/demo_case/         synthetic demo case (invented; not a real case)
+data/philippines_cumpio/ real case reconstructed from public reporting (people named by role)
 fixtures/mock/          saved model outputs for mock mode
 eval/                   evaluation and pre-submission check scripts
 tests/                  spec tests for every task, plus app smoke tests
@@ -88,6 +91,7 @@ Every potential issue cites numbered source lines, and code verifies those citat
 
 ## Data sources
 - `data/demo_case/`: **synthetic**, invented for testing. Not a real case, and no real people.
+- `data/philippines_cumpio/`: reconstructed from Human Rights Institute, Columbia Law School (TrialWatch), ["Five questions the court must answer in deciding the case of journalist Frenchie Mae Cumpio and human rights defender Mariel Domequil"](https://hri.law.columbia.edu/trialwatch-five-questions-court-deciding-case-journalist-frenchie-mae-cumpio-and-human-rights). Paraphrased, people named by role; its saved outputs in `fixtures/mock/cumpio_reconstructed/` were written for the demo, not recorded from a model. The January 2026 ruling is noted from press reports (e.g. [Philstar](https://www.philstar.com/headlines/2026/01/23/2502859/community-journalist-convicted-terror-financing)).
 - `taxonomy/rights.yaml`: drafted from public sources: the ICCPR (Art. 9 and 14) and UN Human Rights Committee General Comment No. 32.
 - Background reading, not included in the repository: TrialWatch's public fairness reports, such as Thailand: Pan Thalufah (June 2025), listed in [docs/02_track2_brief.md](docs/02_track2_brief.md).
 - No other datasets are used. Add any you use, with its licence or terms and attribution.

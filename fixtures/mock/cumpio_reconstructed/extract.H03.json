@@ -1,0 +1,41 @@
+{
+  "events": [
+    {
+      "id": "E-H03-1",
+      "hearing": "H03",
+      "actor": "witness",
+      "action": "Former-insurgent witnesses described cash handoffs and deliveries of food and materials.",
+      "source_ids": [
+        "H03-L005"
+      ]
+    },
+    {
+      "id": "E-H03-2",
+      "hearing": "H03",
+      "actor": "other",
+      "action": "At least two of these witnesses are under Army protection; the defense says this gives them incentives to favor the prosecution.",
+      "source_ids": [
+        "H03-L006",
+        "H03-L007"
+      ]
+    },
+    {
+      "id": "E-H03-3",
+      "hearing": "H03",
+      "actor": "witness",
+      "action": "A witness placed D2 in an organization in 2010.",
+      "source_ids": [
+        "H03-L008"
+      ]
+    },
+    {
+      "id": "E-H03-4",
+      "hearing": "H03",
+      "actor": "defense",
+      "action": "The defense submitted birth and school records showing D2 was 13 in 2010 and living in another province.",
+      "source_ids": [
+        "H03-L009"
+      ]
+    }
+  ]
+}

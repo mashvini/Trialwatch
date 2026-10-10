@@ -1,0 +1,61 @@
+{
+  "events": [
+    {
+      "id": "E-H01-1",
+      "hearing": "H01",
+      "actor": "police",
+      "action": "D1 and D2 were arrested in a night raid on their rented room on 7 February 2020 and have been detained since.",
+      "source_ids": [
+        "H01-L005"
+      ]
+    },
+    {
+      "id": "E-H01-2",
+      "hearing": "H01",
+      "actor": "prosecution",
+      "action": "Charges of illegal possession of firearms and explosives were filed, based on weapons police say they found in the room.",
+      "source_ids": [
+        "H01-L006"
+      ]
+    },
+    {
+      "id": "E-H01-3",
+      "hearing": "H01",
+      "actor": "prosecution",
+      "action": "About a year after the arrest, terrorism-financing charges were added, based on former insurgents' accounts and funds from the room.",
+      "source_ids": [
+        "H01-L007",
+        "H01-L008"
+      ]
+    },
+    {
+      "id": "E-H01-4",
+      "hearing": "H01",
+      "actor": "prosecution",
+      "action": "The prosecution relies on a 2017 designation of the CPP-NPA; the Anti-Terrorism Council's own designation is dated 9 December 2020.",
+      "source_ids": [
+        "H01-L009"
+      ]
+    },
+    {
+      "id": "E-H01-5",
+      "hearing": "H01",
+      "actor": "police",
+      "action": "A warrant affidavit says surveillance began in October 2019, based on an unidentified informant.",
+      "source_ids": [
+        "H01-L010",
+        "H01-L011"
+      ]
+    },
+    {
+      "id": "E-H01-6",
+      "hearing": "H01",
+      "actor": "other",
+      "action": "The day before the raid, a letter asked the Commission on Human Rights to inspect an office and certify it held no illegal items; receipt was confirmed and no inspection took place.",
+      "source_ids": [
+        "H01-L012",
+        "H01-L013"
+      ]
+    }
+  ]
+}

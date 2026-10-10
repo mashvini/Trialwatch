@@ -64,7 +64,7 @@ Defined in `fairtrace/schemas.py`. Change them only with the whole team's agreem
 
 | Model | Purpose | Key fields |
 |---|---|---|
-| `Case`, `HearingRef`, `DocumentRef` | Case definition from `case.yaml` | hearings, documents, `reasoning_paragraphs` for judgments |
+| `Case`, `HearingRef`, `DocumentRef` | Case definition from `case.yaml` | hearings, documents, `reasoning_paragraphs` for judgments; `synthetic` or `provenance` (where a reconstructed case's material comes from), each shown as a banner and in the export |
 | `SourceLine` | One numbered line or paragraph | `id`, `doc`, `text` |
 | `Event` | A factual courtroom event | `actor`, `action`, `source_ids` |
 | `Flag` | A potential issue | `right_id`, `source_ids`, `quote`, `explanation`, `questions_for_lawyer`, `missing_facts`, `status`, `origin` |
@@ -175,8 +175,8 @@ Word export via `python-docx` is a stretch goal.
 | `api` | Any OpenAI-compatible API (default: Groq) | Live demo on public or synthetic data |
 | `local` | Ollama on the laptop (`http://localhost:11434/v1`) | Confidential data; offline |
 
-- Mock lookup: `fixtures/mock/<prompt>.<key>.json`, then `<prompt>.json`. The key is the hearing ID for extract and flag, and the flag ID for the Devil's Advocate.
-- `FAIRTRACE_RECORD=1` saves real outputs to `fixtures/recorded/`; copy good ones into `fixtures/mock/` for the demo.
+- Mock lookup: `fixtures/mock/<case_id>/<prompt>.<key>.json`, then `<case_id>/<prompt>.json`, then the same two names directly under `fixtures/mock/` (the demo case's). The key is the hearing ID for extract and flag, and the flag ID for the Devil's Advocate.
+- `FAIRTRACE_RECORD=1` saves real outputs to `fixtures/recorded/<case_id>/`; copy good ones into that case's fixtures folder for the demo.
 - Temperature 0, JSON output, one retry on invalid JSON, then a visible error. One hearing per call keeps context small enough for local models.
 
 ## Evaluation (`fairtrace/evaluate.py`)

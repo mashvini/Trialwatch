@@ -1,0 +1,33 @@
+{
+  "flags": [
+    {
+      "id": "F-H02-1",
+      "right_id": "presumption_of_innocence",
+      "event_ids": [
+        "E-H02-2",
+        "E-H02-3",
+        "E-H02-4",
+        "E-H02-5"
+      ],
+      "source_ids": [
+        "H02-L007",
+        "H02-L009",
+        "H02-L010",
+        "H02-L011",
+        "H02-L015",
+        "H02-L017"
+      ],
+      "quote": "none of the entry team searched for weapons",
+      "explanation": "Potential issue with the presumption of innocence. The entry team frisked the defendants on their beds and declared the room clear without seeing any weapons; after the defendants had been taken out for several minutes, the search team described a firearm and a grenade as very obvious. The lawyer may want to assess whether this account of the discovery meets the prosecution's burden of proof.",
+      "questions_for_lawyer": [
+        "Does the prosecution's account explain why the entry team did not see the weapons?",
+        "Did the court place the burden of proof on the defendant?"
+      ],
+      "missing_facts": [
+        "Who stayed in the room while the defendants were outside, and was that time recorded?",
+        "Was the search filmed or witnessed by anyone independent of the police and military?",
+        "What prompted the decision to carry out the raid that night?"
+      ]
+    }
+  ]
+}

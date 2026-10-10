@@ -1,0 +1,29 @@
+# RECONSTRUCTED from public reporting. Not TrialWatch monitoring notes, not court records.
+# Every observation in hearings/*.txt paraphrases this source:
+#   Human Rights Institute, Columbia Law School (TrialWatch), "Five questions the court must answer
+#   in deciding the case of journalist Frenchie Mae Cumpio and human rights defender Mariel Domequil"
+#   https://hri.law.columbia.edu/trialwatch-five-questions-court-deciding-case-journalist-frenchie-mae-cumpio-and-human-rights
+# The article groups the record by theme, not by hearing date, so each "hearing" file is one theme
+# (no dates). People are referred to by role. Nothing is added beyond what the article reports.
+# Later: in January 2026 the Regional Trial Court, Branch 45, Tacloban City, convicted both defendants
+# of terrorism financing and acquitted them of the firearms and explosives charges (as reported by
+# the press, e.g. https://www.philstar.com/headlines/2026/01/23/2502859/community-journalist-convicted-terror-financing).
+# The judgment text is not public, so it is not included and Copy-Through cannot run on this case.
+id: cumpio_reconstructed
+title: "Philippines: journalist Frenchie Mae Cumpio and co-accused (reconstructed from public reporting)"
+country: Philippines
+language: en
+synthetic: false
+provenance: >-
+  Reconstructed from a public TrialWatch article (Human Rights Institute, Columbia Law School). Not
+  real monitoring notes or court records; people are named by role. The court ruled in January 2026,
+  after the article; that ruling is not part of this case.
+charges:
+  - "Illegal possession of firearms and explosives"
+  - "Terrorism financing under Republic Act No. 10168 (added about a year after arrest)"
+hearings:
+  - {id: H01, file: hearings/session_01_case_record.txt}
+  - {id: H02, file: hearings/session_02_raid_evidence.txt}
+  - {id: H03, file: hearings/session_03_former_insurgent_witnesses.txt}
+  - {id: H04, file: hearings/session_04_procedure_and_detention.txt}
+documents: []

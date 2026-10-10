@@ -1,0 +1,27 @@
+{
+  "challenges": [
+    {
+      "flag_id": "F-H02-1",
+      "state_argument": "The entry team's job was to secure the occupants, not to search, so not noticing the weapons does not mean they were absent.",
+      "verdict": "supported",
+      "source_ids": [
+        "H02-L010"
+      ],
+      "reasoning": "An entry-team officer said he had not looked for the weapons, which fits this explanation. Weigh it against the search team calling the weapons very obvious (H02-L015) and D1's account of 15 to 20 minutes outside the room (H02-L016)."
+    },
+    {
+      "flag_id": "F-H03-1",
+      "state_argument": "Protection is routine for former insurgents who testify, and one wrong date does not make the rest of their testimony unreliable.",
+      "verdict": "not_addressed",
+      "source_ids": [],
+      "reasoning": "The record shows the protection and the conflict over 2010, but not what the protection involves or whether the other testimony was corroborated. Ask the monitor."
+    },
+    {
+      "flag_id": "F-H04-1",
+      "state_argument": "The case became more complex when terrorism-financing charges were added, and the time taken reflects the evidence the case required.",
+      "verdict": "not_addressed",
+      "source_ids": [],
+      "reasoning": "The record gives no reasons for the postponements, so it neither confirms nor answers this justification."
+    }
+  ]
+}

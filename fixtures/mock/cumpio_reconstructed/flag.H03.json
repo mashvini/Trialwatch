@@ -1,0 +1,28 @@
+{
+  "flags": [
+    {
+      "id": "F-H03-1",
+      "right_id": "presumption_of_innocence",
+      "event_ids": [
+        "E-H03-2",
+        "E-H03-3",
+        "E-H03-4"
+      ],
+      "source_ids": [
+        "H03-L006",
+        "H03-L008",
+        "H03-L009"
+      ],
+      "quote": "showing she was 13 years old in 2010",
+      "explanation": "Potential issue with the presumption of innocence. Part of the prosecution's case comes from witnesses under Army protection, and one of them placed D2 in an organization in 2010, when birth and school records show she was 13 and living in another province. The reliability of this testimony may need careful assessment before it supports the charges.",
+      "questions_for_lawyer": [
+        "How much of the prosecution's case rests on the former-insurgent witnesses?",
+        "Did the court place the burden of proof on the defendant?"
+      ],
+      "missing_facts": [
+        "What does the protection given to these witnesses involve, and when did it start?",
+        "Did the prosecution respond to the birth and school records?"
+      ]
+    }
+  ]
+}

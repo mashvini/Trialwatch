@@ -1,0 +1,33 @@
+{
+  "events": [
+    {
+      "id": "E-H04-1",
+      "hearing": "H04",
+      "actor": "other",
+      "action": "The defendants have been in pretrial detention for over five years.",
+      "source_ids": [
+        "H04-L005"
+      ]
+    },
+    {
+      "id": "E-H04-2",
+      "hearing": "H04",
+      "actor": "court_staff",
+      "action": "The record shows repeated postponements, with no reasons given.",
+      "source_ids": [
+        "H04-L006",
+        "H04-L007"
+      ]
+    },
+    {
+      "id": "E-H04-3",
+      "hearing": "H04",
+      "actor": "defense",
+      "action": "Evidence closed on 13 October and the defense made its formal offer of exhibits.",
+      "source_ids": [
+        "H04-L008",
+        "H04-L009"
+      ]
+    }
+  ]
+}

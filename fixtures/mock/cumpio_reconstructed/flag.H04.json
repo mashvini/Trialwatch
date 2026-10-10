@@ -1,0 +1,27 @@
+{
+  "flags": [
+    {
+      "id": "F-H04-1",
+      "right_id": "trial_without_undue_delay",
+      "event_ids": [
+        "E-H04-1",
+        "E-H04-2"
+      ],
+      "source_ids": [
+        "H04-L005",
+        "H04-L006",
+        "H04-L007"
+      ],
+      "quote": "in pretrial detention for over five years",
+      "explanation": "Potential issue with trial without undue delay. The defendants have been detained for over five years before a verdict, and the record shows repeated postponements with no reasons given.",
+      "questions_for_lawyer": [
+        "Who caused each adjournment, and why?",
+        "Is the case complex enough to explain the delay?"
+      ],
+      "missing_facts": [
+        "The dates and reasons of each postponement",
+        "Whether release pending trial was requested, and why it was refused"
+      ]
+    }
+  ]
+}

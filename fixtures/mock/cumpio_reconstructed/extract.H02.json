@@ -1,0 +1,67 @@
+{
+  "events": [
+    {
+      "id": "E-H02-1",
+      "hearing": "H02",
+      "actor": "witness",
+      "action": "A prosecution witness said the defendants were classified as highly dangerous (risk level 5 of 5); several witnesses knew little about their backgrounds.",
+      "source_ids": [
+        "H02-L005",
+        "H02-L006"
+      ]
+    },
+    {
+      "id": "E-H02-2",
+      "hearing": "H02",
+      "actor": "police",
+      "action": "The entry team frisked the defendants on their beds in a partly lit room, declared it clear, and did not search for weapons.",
+      "source_ids": [
+        "H02-L007",
+        "H02-L008",
+        "H02-L009",
+        "H02-L010"
+      ]
+    },
+    {
+      "id": "E-H02-3",
+      "hearing": "H02",
+      "actor": "police",
+      "action": "The defendants were removed from the room on a decision made in advance by the ground commander, though an officer agreed there was no danger once they were secured.",
+      "source_ids": [
+        "H02-L011",
+        "H02-L012"
+      ]
+    },
+    {
+      "id": "E-H02-4",
+      "hearing": "H02",
+      "actor": "police",
+      "action": "The search team brought the defendants back after several minutes and described the firearm and grenade as very obvious.",
+      "source_ids": [
+        "H02-L013",
+        "H02-L014",
+        "H02-L015"
+      ]
+    },
+    {
+      "id": "E-H02-5",
+      "hearing": "H02",
+      "actor": "defendant",
+      "action": "D1 testified that 15 to 20 minutes passed and that the weapons were on her bed when she was brought back; both defendants deny the weapons were theirs.",
+      "source_ids": [
+        "H02-L016",
+        "H02-L017",
+        "H02-L018"
+      ]
+    },
+    {
+      "id": "E-H02-6",
+      "hearing": "H02",
+      "actor": "defendant",
+      "action": "The defendants said the funds in the room came from a fundraiser.",
+      "source_ids": [
+        "H02-L019"
+      ]
+    }
+  ]
+}
