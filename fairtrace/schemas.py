@@ -41,6 +41,9 @@ class Case(BaseModel):
     country: str
     language: str = "en"
     synthetic: bool = False       # True = invented data; the app labels it everywhere
+    # Where a real case's material comes from when it is reconstructed from public sources (not
+    # real monitoring notes). Shown in the app and the export, like the synthetic label.
+    provenance: str = ""
     charges: list[str] = []
     hearings: list[HearingRef] = []
     documents: list[DocumentRef] = []

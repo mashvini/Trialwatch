@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 from eval.run_eval import score
+from fairtrace import ingest
 
 ROOT = Path(__file__).resolve().parent.parent
 DEMO = ROOT / "data" / "demo_case"
@@ -51,15 +52,24 @@ def check_secrets() -> list[str]:
     return [f"possible secret in history: {line.strip()[:12]}..." for line in added if SECRET.search(line)]
 
 
-def check_synthetic_labels() -> list[str]:
-    """Every demo file says it is synthetic, and case.yaml marks it so the app labels it."""
-    problems = [
-        f"no SYNTHETIC label: {p.relative_to(ROOT).as_posix()}"
-        for p in sorted(DEMO.rglob("*"))
-        if p.is_file() and p.suffix in (".txt", ".yaml") and "SYNTHETIC" not in p.read_text(encoding="utf-8").upper()
-    ]
-    if "synthetic: true" not in (DEMO / "case.yaml").read_text(encoding="utf-8"):
-        problems.append("data/demo_case/case.yaml: synthetic is not true")
+def check_case_labels() -> list[str]:
+    """Every case is either synthetic or reconstructed from cited public sources, and every file says so.
+
+    A case with neither label could be real case material, which must never be committed.
+    """
+    problems = []
+    for case_yaml in sorted((ROOT / "data").glob("*/case.yaml")):
+        case = ingest.load_case(case_yaml.parent)
+        label = "SYNTHETIC" if case.synthetic else "RECONSTRUCTED" if case.provenance else None
+        folder = case_yaml.parent.relative_to(ROOT).as_posix()
+        if label is None:
+            problems.append(f"{folder}: neither synthetic nor a provenance; real case data must not be committed")
+            continue
+        problems += [
+            f"no {label} label: {p.relative_to(ROOT).as_posix()}"
+            for p in sorted(case_yaml.parent.rglob("*"))
+            if p.is_file() and p.suffix in (".txt", ".yaml") and label not in p.read_text(encoding="utf-8").upper()
+        ]
     return problems
 
 
@@ -83,7 +93,7 @@ def main() -> int:
     checks = [
         ("No secrets file, redaction map or runtime data in git history", check_forbidden_paths, "FAIL"),
         ("No API keys in git history", check_secrets, "FAIL"),
-        ("Demo data labeled synthetic", check_synthetic_labels, "FAIL"),
+        ("Every case labeled synthetic or reconstructed", check_case_labels, "FAIL"),
         ("Mock demo reproduces its numbers", check_demo_numbers, "FAIL"),
         ("Team placeholders filled in", check_placeholders, "TODO"),
     ]

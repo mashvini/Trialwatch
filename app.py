@@ -126,6 +126,8 @@ st.title(case.title)
 st.caption(f"{case.country} · {len(case.hearings)} hearings · {len(case.documents)} documents · mode: {mode}")
 if case.synthetic:
     st.warning("Synthetic demo data: invented for testing. Not a real case.", icon="🧪")
+if case.provenance:
+    st.warning(case.provenance, icon="📰")
 
 
 def not_built(message: str) -> None:

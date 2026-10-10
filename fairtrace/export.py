@@ -18,7 +18,8 @@ def export_markdown(
     Spec (tests/test_spec_export.py):
     - Title: "# Draft findings: <case title>"
     - A note under the title: an AI-assisted draft, reviewed by <reviewer>; potential issues only;
-      the legal assessment and any grade remain the expert's. Mention "SYNTHETIC DATA" if case.synthetic.
+      the legal assessment and any grade remain the expert's. Mention "SYNTHETIC DATA" if case.synthetic,
+      and the case's provenance (where reconstructed material comes from) if it has one.
     - One "## <right name>" section per right (in rights.yaml order) that has ACCEPTED flags.
       Pending, rejected and needs_facts flags never appear in these sections.
     - Each accepted flag: its explanation, followed by footnote markers [^n] for its source lines.
@@ -37,6 +38,8 @@ def export_markdown(
     out = [f"# Draft findings: {case.title}", ""]
     if case.synthetic:
         out += ["> **SYNTHETIC DATA**: invented for testing. Not a real case.", ""]
+    if case.provenance:
+        out += [f"> **SOURCE**: {case.provenance}", ""]
     out += [
         f"> AI-assisted draft, reviewed by {reviewer or '(no reviewer named)'}. It lists potential issues only; "
         "the legal assessment and any grade remain the expert's.",
@@ -115,6 +118,8 @@ def questions_checklist(record: CaseRecord, groups: dict[str, list[MonitorQuesti
     out = [f"# Questions for the monitor: {record.case.title}", ""]
     if record.case.synthetic:
         out += ["> **SYNTHETIC DATA**: invented for testing. Not a real case.", ""]
+    if record.case.provenance:
+        out += [f"> **SOURCE**: {record.case.provenance}", ""]
     out += ["Facts the notes do not record. Please answer what you saw or heard; leave blank if unsure.", ""]
     if not groups:
         out += ["No open questions.", ""]
