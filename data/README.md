@@ -16,6 +16,8 @@ data/<case_id>/
 | `demo_case/` | **Synthetic**: invented for testing, not a real case. The default case in the app |
 | `philippines_cumpio/` | **Reconstructed from public reporting**: the case of journalist Frenchie Mae Cumpio and human rights defender Mariel Domequil, as described in a public [TrialWatch article](https://hri.law.columbia.edu/trialwatch-five-questions-court-deciding-case-journalist-frenchie-mae-cumpio-and-human-rights). The article groups the record by theme, so each "hearing" is a theme; people are named by role; every line paraphrases the article. Not real monitoring notes or court records. The court ruled in January 2026, after the article; that ruling and the judgment (not public) are not included |
 
+**Cases added in the app** ("Add a case" tab, `fairtrace/new_case.py`) are written to `data/local/<name>/` in the same format, with hearings numbered H01, H02… in upload order. `data/local/` is git-ignored, and `eval.check_submission` fails if anything under it was ever committed, so uploaded material, which may be real, stays on the machine. Move a case out of `data/local/` only if it is synthetic or public, and labeled.
+
 A case built from public material sets `provenance` in `case.yaml` and starts every file with a `RECONSTRUCTED` label; an invented one sets `synthetic: true` and a `SYNTHETIC` label. `python -m eval.check_submission` fails on a case folder with neither.
 
 **Never commit real confidential case data.** Use public or synthetic material, labeled as such.

@@ -41,12 +41,13 @@ On Windows, activate with `.venv\Scripts\activate` and copy with `copy .env.exam
 5. **Questions for the monitor**: grouped by hearing; download as a checklist.
 6. **Export**: draft findings in Markdown, accepted issues only.
 7. **Evaluation**: scores against the case's answer key.
+8. **Add a case**: upload a new case's hearing notes (one .txt per hearing) and any court documents, preview the numbered lines, and save. It is stored under `data/local/`, which git ignores, and selected in the sidebar.
 
 Command line: `python -m eval.run_eval data/demo_case mock` scores a case without the app.
 
 **Second case:** pick `philippines_cumpio` in the sidebar for a real case, the trial of journalist Frenchie Mae Cumpio in the Philippines, reconstructed from a public TrialWatch article (see [data/README.md](data/README.md)). It shows the tool on real concerns: 3 potential issues, a Devil's Advocate verdict the record supports, and questions for the monitor. Copy-Through is skipped because no judgment text is public.
 
-A new case is a folder under `data/` with a `case.yaml`, one text file per hearing and the court documents; see [data/README.md](data/README.md).
+A new case can be added in the app (**Add a case** tab) or by hand as a folder under `data/` with a `case.yaml`, one text file per hearing and the court documents; see [data/README.md](data/README.md). A new case has no saved outputs, so its model steps need `api` or `local` mode; use `local` for real or confidential material.
 
 ## Model modes
 | Mode | What it does | Setup |

@@ -19,7 +19,7 @@ def test_secret_patterns():
 
 
 def test_forbidden_paths():
-    for path in [".env", "data/real_case/names.yaml", "data/demo_case/audit_log.jsonl", "data/x/.cache/a.json", "fixtures/recorded/flag.json"]:
+    for path in [".env", "data/real_case/names.yaml", "data/demo_case/audit_log.jsonl", "data/x/.cache/a.json", "fixtures/recorded/flag.json", "data/local/my_case/case.yaml"]:
         assert FORBIDDEN_PATH.search(path), path
     for path in [".env.example", "data/demo_case/names.example.yaml", "fixtures/mock/flag.H01.json"]:
         assert not FORBIDDEN_PATH.search(path), path

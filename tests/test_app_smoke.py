@@ -14,6 +14,6 @@ def test_app_starts():
 
 def test_run_analysis_in_mock_mode():
     at = AppTest.from_file(APP, default_timeout=60).run()
-    at.radio[0].set_value("mock").run()
+    at.radio(key="mode").set_value("mock").run()
     at.button(key="run").click().run()
     assert not at.exception

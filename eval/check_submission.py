@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DEMO = ROOT / "data" / "demo_case"
 
 # Paths that must never be committed (AGENTS.md rule 7 and .gitignore).
-FORBIDDEN_PATH = re.compile(r"(^|/)(\.env|names\.yaml|audit_log\.jsonl)$|(^|/)\.cache/|^fixtures/recorded/|^exports/")
+FORBIDDEN_PATH = re.compile(r"(^|/)(\.env|names\.yaml|audit_log\.jsonl)$|(^|/)\.cache/|^fixtures/recorded/|^exports/|^data/local/")
 # Common API key shapes: Groq, OpenAI-style, Google. A filled-in "KEY=value" line is caught too.
 # Values are plain token characters, so this pattern and its test don't match themselves.
 SECRET = re.compile(r"gsk_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|_API_KEY=[A-Za-z0-9_-]{8,}")

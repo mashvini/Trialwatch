@@ -17,3 +17,6 @@ exports/
 
 # os
 .DS_Store
+
+# cases added in the app (may hold real material)
+data/local/

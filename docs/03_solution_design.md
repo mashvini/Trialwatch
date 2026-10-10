@@ -187,7 +187,8 @@ Word export via `python-docx` is a stretch goal.
 
 ## User interface
 - **Sidebar:** model mode, case, module checkboxes, reviewer name, Run analysis.
-- **Tabs:** Overview (pipeline status) · Sources (numbered lines) · Issues to review (cards with sources, questions, Devil's Advocate, accept/reject) · Copy-Through · Questions for the monitor · Export · Evaluation · About.
+- **Tabs:** Overview (pipeline status) · Sources (numbered lines) · Issues to review (cards with sources, questions, Devil's Advocate, accept/reject) · Copy-Through · Questions for the monitor · Export · Evaluation · Add a case · About.
+- **Add a case** (`fairtrace/new_case.py`, plain code): title, country, what the material is (synthetic, reconstructed from public sources with its source, or real/confidential), charges, one .txt per hearing with optional dates, court documents with type, ID prefix and (for a judgment) the reasoning paragraphs, and optional names to redact. It previews the numbered lines, lists what is missing in plain words, and writes the folder to the git-ignored `data/local/`, never overwriting a case. A real or confidential case shows a banner recommending local mode.
 - **Overview** also shows a hearings × rights heatmap (T12, `fairtrace/heatmap.py`): potential issues per cell, rights in `rights.yaml` order, a "Court documents" row for Copy-Through flags, and a toggle between flags not rejected by a reviewer and accepted flags only. Empty cells are grey; hovering shows the flag IDs. It is a count, not a measure of fairness.
 - Any step that is still a stub shows "Not built yet: T<n>" instead of crashing, so the app always runs.
 

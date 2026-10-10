@@ -7,17 +7,18 @@ it and shows "Not built yet" instead of crashing, so the app runs from day one a
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import altair as alt
 import streamlit as st
 
-from fairtrace import evaluate, export, extract, flag, heatmap, ingest, redact, review, verify
+from fairtrace import evaluate, export, extract, flag, heatmap, ingest, new_case, redact, review, verify
 from fairtrace.analyzers import REGISTRY, in_stage_order
 from fairtrace.cache import get_or_run
 from fairtrace.config import VALID_MODES, load_settings
 from fairtrace.llm import LLM
-from fairtrace.schemas import CaseRecord, Decision, Flag
+from fairtrace.schemas import CaseRecord, Decision, DocumentRef, Flag, HearingRef
 from fairtrace.taxonomy import load_rights
 
 st.set_page_config(page_title="FairTrace", page_icon="⚖️", layout="wide")
@@ -36,13 +37,22 @@ mode = st.sidebar.radio(
     list(VALID_MODES),
     index=list(VALID_MODES).index(settings.mode),
     horizontal=True,
+    key="mode",
     help="mock = saved outputs, no network · api = Groq or another OpenAI-compatible API · local = Ollama on this laptop",
 )
-case_dirs = sorted(p for p in settings.path("data_dir").iterdir() if (p / "case.yaml").exists())
+data_dir = settings.path("data_dir")
+case_dirs = sorted(p for p in data_dir.iterdir() if (p / "case.yaml").exists()) + new_case.local_cases(data_dir)
 if not case_dirs:
     st.error("No cases found. Add a folder containing case.yaml under data/.")
     st.stop()
-case_dir: Path = st.sidebar.selectbox("Case", case_dirs, format_func=lambda p: p.name)
+just_added = st.session_state.pop("select_case", None)  # set by the "Add a case" tab
+case_dir: Path = st.sidebar.selectbox(
+    "Case",
+    case_dirs,
+    index=case_dirs.index(just_added) if just_added in case_dirs else 0,
+    format_func=lambda p: f"{new_case.LOCAL_DIR}/{p.name}" if p.parent.name == new_case.LOCAL_DIR else p.name,
+)
+is_local_case = case_dir.parent.name == new_case.LOCAL_DIR
 
 st.sidebar.subheader("Modules")
 enabled = [
@@ -128,6 +138,12 @@ if case.synthetic:
     st.warning("Synthetic demo data: invented for testing. Not a real case.", icon="🧪")
 if case.provenance:
     st.warning(case.provenance, icon="📰")
+if is_local_case and not case.synthetic and not case.provenance:
+    st.warning(
+        "Local case, stored under data/local/ (git-ignored). If it holds real or confidential material, "
+        "use local mode: api mode sends its text to the API provider.",
+        icon="🔒",
+    )
 
 
 def not_built(message: str) -> None:
@@ -239,7 +255,7 @@ def render_heatmap(rec: CaseRecord) -> None:
 
 
 tabs = st.tabs(
-    ["Overview", "Sources", "Issues to review", "Copy-Through", "Questions for the monitor", "Export", "Evaluation", "About"]
+    ["Overview", "Sources", "Issues to review", "Copy-Through", "Questions for the monitor", "Export", "Evaluation", "Add a case", "About"]
 )
 
 # ------------------------------------------------------------------ Overview
@@ -382,8 +398,109 @@ with tabs[6]:
             st.write("Missed:", result["missed"] or "none")
             st.write("Not detectable by this version:", result["not_detectable"] or "none")
 
-# ------------------------------------------------------------------ About
+# ------------------------------------------------------------------ Add a case
+CASE_KINDS = {
+    "synthetic": "Synthetic (invented for testing)",
+    "reconstructed": "Reconstructed from public sources",
+    "confidential": "Real or confidential material",
+}
+DOC_TYPES = ["judgment", "indictment", "police_report", "bail_decision", "evidence", "other"]
+DOC_PREFIX = {"judgment": "JDG", "indictment": "IND", "police_report": "POL", "bail_decision": "BAIL", "evidence": "EVD", "other": "DOC"}
+
+
+def read_upload(f) -> str:
+    """An uploaded file's text, or "" with a visible error if it isn't UTF-8 text."""
+    try:
+        return new_case.decode(f.getvalue())
+    except ValueError as e:
+        st.error(f"{f.name}: {e}")
+        return ""
+
+
 with tabs[7]:
+    if "case_added" in st.session_state:
+        st.success(st.session_state.pop("case_added"))
+    st.caption(
+        "Upload a case's notes and documents. It is saved under data/local/, which git ignores, and is "
+        "selected in the sidebar once created. Same format as data/README.md describes."
+    )
+    c1, c2 = st.columns(2)
+    title = c1.text_input("Title", key="new-title", placeholder="Country: short description of the case")
+    country = c2.text_input("Country", key="new-country")
+    kind_label = st.radio("What is this material?", list(CASE_KINDS.values()), horizontal=True, key="new-kind")
+    kind = next(k for k, label in CASE_KINDS.items() if label == kind_label)
+    source = st.text_input("Source (link or citation)", key="new-source") if kind == "reconstructed" else ""
+    if kind == "confidential":
+        st.warning(
+            "Run real or confidential cases in local mode only: api mode sends the text to the API provider. "
+            "List names to redact below so they are replaced by roles before any model call.",
+            icon="🔒",
+        )
+    charges = st.text_area("Charges (optional, one per line)", key="new-charges", height=80)
+    hearing_files = st.file_uploader(
+        "Hearing notes: one .txt file per hearing, in hearing order (one observation per line; # lines are comments)",
+        type=["txt"], accept_multiple_files=True, key="new-hearings",
+    ) or []
+    dates = st.text_input("Hearing dates (optional, in file order, comma-separated)", key="new-dates", placeholder="2026-03-02, 2026-03-16")
+    doc_files = st.file_uploader(
+        "Court documents (optional, .txt; paragraphs separated by blank lines)",
+        type=["txt"], accept_multiple_files=True, key="new-docs",
+    ) or []
+    docs, bad_ranges = [], []
+    for i, f in enumerate(doc_files):
+        a, b, c, d = st.columns([3, 2, 1, 2])
+        a.markdown(f"`{f.name}`")
+        doc_type = b.selectbox("Type", DOC_TYPES, key=f"new-doc-type-{i}")
+        prefix = c.text_input("Prefix", value=DOC_PREFIX[doc_type], key=f"new-doc-id-{i}-{doc_type}")
+        reasoning = None
+        if doc_type == "judgment":
+            span = d.text_input("Court's own reasoning (paragraphs)", key=f"new-doc-reason-{i}", placeholder="e.g. 3-4")
+            match = re.fullmatch(r"\s*(\d+)\s*-\s*(\d+)\s*", span)
+            if match:
+                reasoning = (int(match.group(1)), int(match.group(2)))
+            elif span.strip():
+                bad_ranges.append(f"{f.name}: write the reasoning paragraphs as first-last, for example 3-4.")
+        docs.append(new_case.DocumentUpload(name=f.name, text=read_upload(f), id=prefix.strip().upper(), type=doc_type, reasoning_paragraphs=reasoning))
+    names_text = st.text_area(
+        "Names to redact (optional, one per line)", key="new-names", height=80, placeholder='"Maria Santos": DEFENDANT'
+    )
+
+    draft = new_case.NewCase(
+        title=title, country=country, kind=kind, source=source,
+        charges=charges.splitlines(),
+        hearings=[new_case.Upload(name=f.name, text=read_upload(f)) for f in hearing_files],
+        hearing_dates=[x.strip() for x in dates.split(",")] if dates.strip() else [],
+        documents=docs, names=names_text,
+    )
+    issues = new_case.problems(draft) + bad_ranges
+    if hearing_files:
+        with st.expander("Preview the numbered lines", expanded=False):
+            for n, upload in enumerate(draft.hearings, start=1):
+                lines = ingest.number_hearing(HearingRef(id=f"H{n:02d}", file=upload.name), upload.text)
+                st.markdown(f"**H{n:02d}** · `{upload.name}` · {len(lines)} lines")
+                st.code("\n".join(f"{line.id}  {line.text}" for line in lines) or "(no lines)", language=None)
+            for upload in draft.documents:
+                paragraphs = ingest.split_paragraphs(DocumentRef(id=upload.id or "DOC", type=upload.type, file=upload.name), upload.text)
+                st.markdown(f"**{upload.id or '?'}** · `{upload.name}` · {len(paragraphs)} paragraphs")
+    for issue in issues:
+        st.caption(f"• {issue}")
+    if st.button("Create case", type="primary", disabled=bool(issues), key="new-create"):
+        try:
+            folder = new_case.write_case(data_dir, draft)
+        except (ValueError, OSError) as e:
+            st.error(f"Could not create the case: {e}")
+        else:
+            for key in [k for k in st.session_state if str(k).startswith("new-")]:
+                del st.session_state[key]
+            st.session_state["select_case"] = folder
+            st.session_state["case_added"] = (
+                f"Created {new_case.LOCAL_DIR}/{folder.name} and selected it in the sidebar. Press Run analysis. "
+                "It has no saved outputs, so use api or local mode for the model steps."
+            )
+            st.rerun()
+
+# ------------------------------------------------------------------ About
+with tabs[8]:
     st.markdown(
         """
 **FairTrace** helps TrialWatch lawyers turn trial-monitoring notes and court documents into

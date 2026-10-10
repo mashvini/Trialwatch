@@ -32,7 +32,8 @@ streamlit run app.py
 ## Repo map
 | Path | Purpose | Status |
 |---|---|---|
-| `app.py` | Streamlit shell: sidebar, pipeline runner, tabs, review screen (T5), questions for the monitor (T8) | ✅ |
+| `app.py` | Streamlit shell: sidebar, pipeline runner, tabs, review screen (T5), questions for the monitor (T8), Add a case | ✅ |
+| `fairtrace/new_case.py` | Validates and writes cases added in the app to the git-ignored `data/local/` | ✅ |
 | `config.yaml` | Mode, providers, thresholds, enabled modules, paths | ✅ |
 | `fairtrace/config.py` | Loads `config.yaml` and `.env` | ✅ |
 | `fairtrace/schemas.py` | Data contracts (change only with team agreement) | ✅ |
@@ -58,7 +59,7 @@ streamlit run app.py
 | `data/demo_case/` | Synthetic case: 2 hearings, 3 documents, answer key | ✅ |
 | `data/philippines_cumpio/` | Real case reconstructed from a public TrialWatch article (`provenance` in `case.yaml`): 4 thematic sessions, no documents, answer key; fixtures in `fixtures/mock/cumpio_reconstructed/` | ✅ |
 | `fixtures/mock/` | Saved outputs for mock mode (see `fixtures/README.md`) | ✅ |
-| `tests/` | `test_skeleton.py`, `test_app_smoke.py`, `test_monitor_questions.py`, `test_redaction_wiring.py`, `test_heatmap.py`; `test_spec_*.py` define each task | ✅ |
+| `tests/` | `test_skeleton.py`, `test_app_smoke.py`, `test_monitor_questions.py`, `test_redaction_wiring.py`, `test_heatmap.py`, `test_case_fixtures.py`, `test_new_case.py`; `test_spec_*.py` define each task | ✅ |
 
 ## How stubs and spec tests work
 - Each stub raises `NotImplementedError("T<n>: ...")`. The app catches it and shows "Not built yet", so the app always runs.
