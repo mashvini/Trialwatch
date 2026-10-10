@@ -23,8 +23,8 @@ def score(case_dir: Path, mode: str | None = None) -> dict | None:
     """Run the pipeline on one case and score it; None if the case has no answer key."""
     settings = load_settings()
     rights = load_rights(settings)
-    llm = LLM(settings, mode)
     case = ingest.load_case(case_dir)
+    llm = LLM(settings, mode, case_id=case.id)
     record = CaseRecord(case=case)
     record.source_lines = redact.redact_lines(ingest.read_sources(case_dir, case), redact.load_names(case_dir))
     record.events = extract.extract_events(record, llm, settings)

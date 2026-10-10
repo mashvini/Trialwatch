@@ -65,7 +65,7 @@ def run_pipeline() -> tuple[CaseRecord, list[tuple[str, str, str]]]:
     log: list[tuple[str, str, str]] = []
     case = ingest.load_case(case_dir)
     record = CaseRecord(case=case)
-    llm = LLM(settings, mode)
+    llm = LLM(settings, mode, case_id=case.id)
     st.session_state["rejected"] = []
     st.session_state["run_model"] = llm.model_name  # logged with decisions, even if the sidebar mode changes later
 

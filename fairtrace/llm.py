@@ -5,9 +5,11 @@ Modes
 - api:   any OpenAI-compatible endpoint (default: Groq)
 - local: Ollama on this machine (OpenAI-compatible at http://localhost:11434/v1)
 
-Mock lookup order: fixtures/mock/<prompt>.<mock_key>.json, then fixtures/mock/<prompt>.json.
-Recording: with FAIRTRACE_RECORD=1, real outputs are saved to fixtures/recorded/ under the
-same names, so good runs can be copied into fixtures/mock/ for the demo.
+Mock lookup order, given the case id: fixtures/mock/<case_id>/<prompt>.<mock_key>.json,
+fixtures/mock/<case_id>/<prompt>.json, then the same two names directly under fixtures/mock/
+(the shared folder the demo case uses).
+Recording: with FAIRTRACE_RECORD=1, real outputs are saved to fixtures/recorded/<case_id>/ under
+the same names, so good runs can be copied into fixtures/mock/<case_id>/ for the demo.
 """
 from __future__ import annotations
 
@@ -44,9 +46,11 @@ def extract_json(text: str) -> Any:
 
 
 class LLM:
-    def __init__(self, settings: Settings, mode: str | None = None):
+    def __init__(self, settings: Settings, mode: str | None = None, case_id: str | None = None):
         self.settings = settings
         self.mode = mode or settings.mode
+        # Fixtures and recordings are looked up per case first, so two cases' "H01" never collide.
+        self.case_id = case_id
         if self.mode not in VALID_MODES:
             raise LLMError(f"Unknown mode {self.mode!r}: use mock, api or local")
         self._client = None
@@ -128,9 +132,12 @@ class LLM:
         return self._client
 
     def _mock(self, prompt_name: str, mock_key: str | None) -> Any:
-        folder = self.settings.path("fixtures_dir")
-        candidates = ([folder / f"{prompt_name}.{mock_key}.json"] if mock_key else []) + [
-            folder / f"{prompt_name}.json"
+        root = self.settings.path("fixtures_dir")
+        folders = ([root / self.case_id] if self.case_id else []) + [root]
+        candidates = [
+            path
+            for folder in folders
+            for path in ([folder / f"{prompt_name}.{mock_key}.json"] if mock_key else []) + [folder / f"{prompt_name}.json"]
         ]
         for path in candidates:
             if path.exists():
@@ -141,7 +148,7 @@ class LLM:
     def _record(self, prompt_name: str, mock_key: str | None, data: Any) -> None:
         if os.getenv("FAIRTRACE_RECORD") != "1":
             return
-        folder = self.settings.path("record_dir")
+        folder = self.settings.path("record_dir") / (self.case_id or "")
         folder.mkdir(parents=True, exist_ok=True)
         name = f"{prompt_name}.{mock_key}.json" if mock_key else f"{prompt_name}.json"
         (folder / name).write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
