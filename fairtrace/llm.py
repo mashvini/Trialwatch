@@ -5,9 +5,10 @@ Modes
 - api:   any OpenAI-compatible endpoint (default: Groq)
 - local: Ollama on this machine (OpenAI-compatible at http://localhost:11434/v1)
 
-Mock lookup order, given the case id: fixtures/mock/<case_id>/<prompt>.<mock_key>.json,
-fixtures/mock/<case_id>/<prompt>.json, then the same two names directly under fixtures/mock/
-(the shared folder the demo case uses).
+Mock lookup order, given the case id: fixtures/mock/<case_id>/<prompt>.<mock_key>.json, then
+fixtures/mock/<case_id>/<prompt>.json. Only the demo case (and calls without a case id, as in the
+tests) also looks at those names directly under fixtures/mock/, the shared folder holding its
+outputs; any other case with no saved outputs gets a clear error instead.
 Recording: with FAIRTRACE_RECORD=1, real outputs are saved to fixtures/recorded/<case_id>/ under
 the same names, so good runs can be copied into fixtures/mock/<case_id>/ for the demo.
 """
@@ -23,6 +24,10 @@ from pydantic import BaseModel, ValidationError
 from .config import VALID_MODES, Settings
 
 T = TypeVar("T", bound=BaseModel)
+
+# The case whose outputs live directly in fixtures/mock/ (data/demo_case/). Every other case keeps
+# its own in fixtures/mock/<case_id>/.
+SHARED_FIXTURES_CASE = "demo_synthetic"
 
 
 class LLMError(RuntimeError):
@@ -133,7 +138,10 @@ class LLM:
 
     def _mock(self, prompt_name: str, mock_key: str | None) -> Any:
         root = self.settings.path("fixtures_dir")
-        folders = ([root / self.case_id] if self.case_id else []) + [root]
+        # The shared folder holds the demo case's outputs. Another case never falls back to it:
+        # replaying the demo's outputs on a different case would show invented citations.
+        uses_shared = self.case_id in (None, SHARED_FIXTURES_CASE)
+        folders = ([root / self.case_id] if self.case_id else []) + ([root] if uses_shared else [])
         candidates = [
             path
             for folder in folders
@@ -142,6 +150,11 @@ class LLM:
         for path in candidates:
             if path.exists():
                 return json.loads(path.read_text(encoding="utf-8"))
+        if not uses_shared and not (root / self.case_id).exists():
+            raise LLMError(
+                f"Case {self.case_id!r} has no saved outputs for mock mode: use api or local mode, "
+                f"or record a run into fixtures/mock/{self.case_id}/ (FAIRTRACE_RECORD=1)"
+            )
         names = ", ".join(p.name for p in candidates)
         raise LLMError(f"No mock fixture for {prompt_name!r} (looked for {names})")
 

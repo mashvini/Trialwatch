@@ -1,13 +1,15 @@
-"""Mock fixtures are looked up per case first, then in the shared folder the demo case uses."""
+"""Mock fixtures are looked up per case; only the demo case uses the shared folder."""
 from __future__ import annotations
 
 import json
 import sys
 
+import pytest
+
 from helpers import ROOT
 
 from fairtrace import ingest
-from fairtrace.llm import LLM
+from fairtrace.llm import LLM, LLMError
 
 sys.path.insert(0, str(ROOT))
 from eval.run_eval import score  # noqa: E402
@@ -37,5 +39,8 @@ def test_case_folder_wins_over_the_shared_folder(settings, tmp_path, monkeypatch
     original = settings.path
     monkeypatch.setattr(settings, "path", lambda key: tmp_path if key == "fixtures_dir" else original(key))
     assert LLM(settings, "mock", case_id="case_x").complete_json("flag", "s", "u", mock_key="H01") == {"flags": ["own"]}
-    assert LLM(settings, "mock", case_id="other").complete_json("flag", "s", "u", mock_key="H01") == {"flags": ["shared"]}
+    assert LLM(settings, "mock", case_id="demo_synthetic").complete_json("flag", "s", "u", mock_key="H01") == {"flags": ["shared"]}
     assert LLM(settings, "mock").complete_json("flag", "s", "u", mock_key="H01") == {"flags": ["shared"]}
+    # Any other case never replays the demo's outputs: a clear error instead.
+    with pytest.raises(LLMError, match="no saved outputs"):
+        LLM(settings, "mock", case_id="other").complete_json("flag", "s", "u", mock_key="H01")

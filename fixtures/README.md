@@ -21,7 +21,7 @@ Keep both when you replace these files with real outputs; they make the demo's g
 Run with `FAIRTRACE_RECORD=1` in `api` or `local` mode. Outputs are saved to `fixtures/recorded/<case_id>/` (git-ignored) under the same names. Review them, then copy the good ones into that case's fixtures folder.
 
 ## One folder per case
-The files directly in `fixtures/mock/` belong to the **synthetic** demo case in `data/demo_case/`. Any other case keeps its fixtures in `fixtures/mock/<case_id>/`, which is searched first, so hearing IDs never collide.
+The files directly in `fixtures/mock/` belong to the **synthetic** demo case in `data/demo_case/`. Any other case keeps its fixtures in `fixtures/mock/<case_id>/` and never falls back to the shared files, so hearing IDs never collide. A case with no folder (for example one added in the app) gets a clear "no saved outputs" error in mock mode: use api or local mode, or record a run.
 
 | Folder | Case | What it is |
 | --- | --- | --- |
